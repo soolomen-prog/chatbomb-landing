@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Chatbomb – MVP Landing</title>
+  <link rel="stylesheet" href="./main.css" />
+</head>
+<body>
+  <!-- Background figure -->
+  <div class="bg-figure" aria-hidden="true">
+    <img src="./assets/images/figure bg.svg" alt="" />
+  </div>
+
+  <!-- Header -->
+  <header>
+    <div class="header-inner">
+      <a class="logo" href="#" aria-label="Chatbomb">
+        <img src="./assets/images/logo cb.svg" alt="Chatbomb" />
+      </a>
+      <button class="btn" id="startBtn">Jetzt starten</button>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <main class="hero" id="hero">
+    <h1 class="headline">
+      Kein Marketing-Blabla – erlebe, wie der Chatbot wirklich funktioniert
+    </h1>
+    <p class="subhead">
+      Wählen Sie die Art Ihres Unternehmens aus und stellen Sie dem intelligenten Chatbot eine beliebige Frage
+    </p>
+
+    <!-- STREAM: сюда летят сообщения (новые сверху) -->
+    <section class="chat-stream" id="chat">
+      <div id="messages" class="messages"></div>
+    </section>
+
+    <!-- Chatbar -->
+    <section class="chat-wrap">
+      <div class="chatbar">
+        <div class="info-badge">
+          <div class="info-dot" id="infoBtn" title="Info">
+            <img src="./assets/images/icon info.svg" alt="info" />
+          </div>
+
+          <div class="business" id="business">
+            <span id="bizLabel">Fahrschule</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            <div class="dropdown" id="bizDrop"></div>
+          </div>
+        </div>
+
+        <div class="entry">
+          <textarea id="prompt" rows="1" placeholder="Stellen Sie Ihre Frage an den Chatbot"></textarea>
+        </div>
+
+        <button class="send" id="send">Senden</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+  // --- Data
+  const BUSINESSES = [
+    { id: 'fahrschule', label: 'Fahrschule',        hint: 'Theorie/ Praxis, freie Termine, Preise und Anmeldung.' },
+    { id: 'shop',       label: 'Online-Shop',       hint: 'E-Commerce: Verfügbarkeit, Versand, Retouren, Zahlungen.' },
+    { id: 'zahnarzt',   label: 'Zahnärzte',         hint: 'Termine, Behandlungen, Schmerzsprechstunde, Kostenvoranschlag.' },
+    { id: 'handwerk',   label: 'Handwerksbetriebe', hint: 'Reparaturen, Angebote, Terminabsprachen.' }
+  ];
+
+  // --- Elements
+  const bizDrop    = document.getElementById('bizDrop');
+  const bizLabel   = document.getElementById('bizLabel');
+  const business   = document.getElementById('business');
+  const infoBtn    = document.getElementById('infoBtn');
+  const promptEl   = document.getElementById('prompt');
+  const entryWrap  = document.querySelector('.entry');
+  const hero       = document.getElementById('hero');
+  const messagesEl = document.getElementById('messages');
+  const chatbarEl  = document.querySelector('.chatbar');
+
+  let activeBiz  = BUSINESSES[0];
+  let chatActive = false;
+
+  function renderDropdown(){
+    bizDrop.innerHTML = BUSINESSES
+      .map(b => `<div class="opt ${b.id===activeBiz.id?'active':''}" data-id="${b.id}">${b.label}</div>`)
+      .join('');
+    bizLabel.textContent = activeBiz.label;
+  }
+  renderDropdown();
+
+  // --- Dropdown: ховер-открытие
+  let hoverTimer;
+  business.addEventListener('mouseenter', () => {
+    clearTimeout(hoverTimer);
+    bizDrop.classList.add('open');
+    business.classList.add('open');
+  });
+  business.addEventListener('mouseleave', () => {
+    hoverTimer = setTimeout(() => {
+      bizDrop.classList.remove('open');
+      business.classList.remove('open');
+    }, 80);
+  });
+
+  // выбор пункта
+  business.addEventListener('click', (e) => {
+    const opt = e.target.closest('.opt');
+    if (!opt) return;
+    const id = opt.getAttribute('data-id');
+    activeBiz = BUSINESSES.find(b => b.id === id) || activeBiz;
+    renderDropdown();
+    messagesEl.innerHTML = '';                // очистка истории
+    bizDrop.classList.remove('open');
+    business.classList.remove('open');
+    setLayoutVars();                          // пересчёт ширин на всякий
+  });
+
+  // --- Info tooltip только на кружке
+  let tooltip = null;
+  infoBtn.addEventListener('mouseenter', () => {
+    if (tooltip) return;
+    tooltip = document.createElement('div');
+    tooltip.className = 'tooltip';
+    tooltip.innerHTML = `<p>${activeBiz.hint}</p>`;
+    infoBtn.parentElement.appendChild(tooltip);
+    tooltip.style.display = 'block';
+  });
+  infoBtn.addEventListener('mouseleave', () => {
+    if (tooltip) { tooltip.remove(); tooltip = null; }
+  });
+
+  // --- Textarea + каретка
+  function normalizeHeight(){ promptEl.style.height = '54px'; }
+  normalizeHeight();
+  function syncCaret(){ entryWrap.classList.toggle('empty', !promptEl.value); }
+  syncCaret();
+  ['input','change','blur','focus','keyup'].forEach(ev =>
+    promptEl.addEventListener(ev, syncCaret)
+  );
+
+  // ---------- размеры (для ширины ленты и 70% баблов) ----------
+  function setLayoutVars(){
+    const root = document.documentElement;
+    const chatbarW = Math.round(chatbarEl.getBoundingClientRect().width);
+    const inputW = Math.round(entryWrap.getBoundingClientRect().width);
+    root.style.setProperty('--chatbar-w', chatbarW + 'px');
+    root.style.setProperty('--input-w',   inputW   + 'px');
+  }
+  window.addEventListener('resize', setLayoutVars);
+  setLayoutVars();
+
+  // ---------- CHAT ----------
+  function activateChatUI(){
+    if (chatActive) return;
+    chatActive = true;
+    document.body.classList.add('chat-active');
+    hero.classList.add('chat-mode');
+    setLayoutVars();
+  }
+
+  function addMessage(text, role='user'){
+    const wrap = document.createElement('div');
+    wrap.className = `msg ${role} anim-in`;
+    wrap.innerHTML = role === 'bot'
+      ? `<div class="bubble">${text}</div><img class="bot-ic" src="./assets/images/icon chatbot.svg" alt="bot">`
+      : `<div class="bubble">${text}</div>`;
+    messagesEl.appendChild(wrap);        // т.к. контейнер column-reverse, append = внизу
+    // убрать класс после анимации
+    wrap.addEventListener('animationend', ()=> wrap.classList.remove('anim-in'), {once:true});
+  }
+
+  function fakeBotReply(){
+    const canned = {
+      fahrschule: [
+        "Здравствуйте! У нас 3 варианта: 1 месяц — 39 €, 3 месяца — 99 €, год — 299 € (душ + шкафчик бесплатно). Показать фото зала или ближайшие тренировки?",
+        "Готово — записал вас на бесплатную тренировку. Хотите перенести время?"
+      ],
+      shop: [
+        "Товар в наличии. Доставка 2–3 дня, есть возврат 14 дней.",
+        "Отправил вам счёт на e-mail. Всё ок?"
+      ],
+      zahnarzt: [
+        "Есть окно завтра в 10:30 и 14:15. Какой слот вам удобнее?",
+        "Записал. Напомнить за день?"
+      ],
+      handwerk: [
+        "Можем приехать в пятницу 9–12 или 13–16. Подходит?",
+        "Сформировал заявку и отправил на почту."
+      ]
+    };
+    const list = canned[activeBiz.id] || ["Готово.", "Принял."];
+    const reply = list[Math.floor(Math.random()*list.length)];
+    setTimeout(()=> addMessage(reply,'bot'), 500);
+  }
+
+  function sendCurrent(){
+    const text = (promptEl.value || '').trim();
+    if (!text) return;
+    activateChatUI();
+    addMessage(text, 'user');
+    promptEl.value = '';
+    syncCaret();
+    promptEl.focus();                 // ← фокус НЕ снимаем
+    fakeBotReply();
+  }
+
+  document.getElementById('send').addEventListener('click', sendCurrent);
+  promptEl.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey){
+      e.preventDefault();
+      sendCurrent();
+    }
+  });
+</script>
+
+</body>
+</html>

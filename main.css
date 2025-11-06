@@ -1,0 +1,368 @@
+/* ---------- Fonts ---------- */
+@font-face {
+  font-family: "TT Firs Neue";
+  src: url("./assets/fonts/TT Firs Neue Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "TT Firs Neue";
+  src: url("./assets/fonts/TT Firs Neue Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "TT Firs Neue";
+  src: url("./assets/fonts/TT Firs Neue Bold.woff2") format("woff2");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ---------- Theme ---------- */
+:root {
+  --bg: #F0BDFF;
+  --ink: #19132F;
+  --muted: #969696;
+  --black: #0B0B0B;
+  --yellow: #FBE456;
+  --blue-soft: #DEF7FF;
+  --white: #FFFFFF;
+  --shadow: 0 4px 34px rgba(0,0,0,0.15);
+  --radius: 27px;
+  --input-w: 600px;
+}
+
+/* ---------- Base ---------- */
+* { box-sizing: border-box; }
+html, body { height: 100%; overflow-x: hidden; }
+body {
+  margin: 0;
+  font-family: "TT Firs Neue", sans-serif;
+  color: var(--ink);
+  background: var(--bg);
+}
+
+/* ---------- Background ---------- */
+.bg-figure {
+  position: absolute;
+  inset: 0;
+  height: 100vh;
+  overflow: hidden;
+  z-index: 1;
+}
+.bg-figure img {
+  position: absolute;
+  width: 2250px;
+  max-width: none;
+  top: -760px;
+  right: -420px;
+}
+
+/* ---------- Header ---------- */
+header { position: relative; z-index: 5; }
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 22px 0;
+}
+.logo img { width: 216px; height: 28px; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  padding: 0 22px;
+  border-radius: 999px;
+  border: 1px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+  font: 400 16px/1 "TT Firs Neue", sans-serif;
+  cursor: pointer;
+  transition: .2s ease;
+  user-select: none;
+}
+.btn:hover {
+  background: var(--black);
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(0,0,0,.18);
+}
+
+/* ---------- Hero ---------- */
+.hero {
+  text-align: center;
+  min-height: calc(100vh - 80px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 20px;
+}
+.headline {
+  font-weight: 800;
+  font-size: 46px;
+  line-height: 56px;
+  max-width: 880px;
+  margin: 0 auto 12px;
+}
+.subhead {
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 26px;
+  max-width: 880px;
+  margin: 0 auto 40px;
+}
+
+/* ---------- Chat bar ---------- */
+.chatbar {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 14px;
+  margin: 20px auto;
+  width: fit-content;
+}
+
+.info-badge { position: relative; display: flex; align-items: center; }
+.info-dot {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid var(--ink);
+  display: grid;
+  place-items: center;
+  margin-right: 10px;
+  cursor: pointer;
+  transition: .2s;
+  background: transparent;
+}
+.info-dot:hover { background: var(--black); }
+.info-dot img { width: 14px; height: 14px; transition: .2s; }
+.info-dot:hover img {
+  filter: invert(86%) sepia(83%) saturate(639%) hue-rotate(2deg) brightness(102%) contrast(97%);
+}
+
+.business {
+  width: 218px;
+  height: 54px;
+  border-radius: var(--radius);
+  border: 1px solid var(--ink);
+  background: transparent;
+  display: flex;
+  align-items: center;
+  padding: 0 18px;
+  gap: 10px;
+  cursor: pointer;
+  position: relative;
+  transition: background .2s, color .2s, border-color .2s;
+}
+.business span {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
+}
+.business svg { width: 16px; height: 16px; transition: transform .2s, stroke .2s; }
+.business:hover {
+  background: var(--ink);
+  border-color: var(--ink);
+}
+.business:hover span { color: #fff; }
+.business:hover svg { stroke: #fff; }
+.business.open svg { transform: rotate(180deg); }
+
+/* Dropdown */
+.dropdown {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(100% + 10px);
+  background: var(--white);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  display: none;
+  text-align: left;
+}
+.dropdown.open { display: block; }
+.dropdown .opt {
+  font-size: 16px;
+  line-height: 34px;
+  padding: 8px 16px;
+  cursor: pointer;
+  text-align: left;
+}
+.dropdown .opt:hover { background: var(--blue-soft); }
+.dropdown .opt.active {
+  background: var(--blue-soft);
+  font-weight: 600;
+}
+
+/* Tooltip */
+.tooltip {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 10px);
+  width: 260px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  padding: 16px 20px;
+  text-align: left;
+  pointer-events: auto;
+  z-index: 20;
+  line-height: 1.4;
+}
+.tooltip p { margin: 0; text-align: left; }
+
+.entry {
+  width: 582px;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.entry textarea {
+  width: 100%;
+  height: 54px;
+  resize: none;
+  padding: 0 20px;
+  border-radius: var(--radius);
+  border: none;
+  outline: none;
+  font-family: "TT Firs Neue", sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 54px;
+  color: var(--ink);
+  background: #fff;
+  transition: border-radius .2s, box-shadow .2s;
+}
+.entry textarea::placeholder { color: var(--muted); }
+
+.send {
+  width: 200px;
+  height: 54px;
+  border-radius: var(--radius);
+  border: 1px solid var(--ink);
+  background: var(--ink);
+  color: #fff;
+  font-family: "TT Firs Neue", sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  transition: .2s;
+}
+.send:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(0,0,0,.18);
+}
+
+/* ---------- Chat layout ---------- */
+.chat-active .chatbar {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 20px;
+  z-index: 6;
+}
+.chat-mode .headline,
+.chat-mode .subhead {
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+  transition: opacity .25s ease, transform .25s ease;
+}
+
+/* Поток сообщений = ширина поля ввода, отступ 20px */
+.chat-stream { display: none; }
+.chat-active .chat-stream {
+  display: flex;
+  flex-direction: column-reverse;
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  width: var(--input-w, 600px);
+  bottom: calc(54px + 20px);
+  height: calc(100vh - 160px);
+  overflow-y: hidden;
+  overflow-x: hidden;
+  z-index: 2;
+}
+
+/* Сообщения */
+.messages {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 20px;
+  width: 100%;
+}
+.msg {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+}
+.msg.user { justify-content: flex-start; }
+.msg.bot  { justify-content: flex-end; }
+
+.msg .bubble {
+  background: #fff;
+  color: var(--ink);
+  border-radius: 16px;
+  padding: 12px 16px;
+  max-width: calc(var(--input-w, 600px) * 0.7);
+  text-align: left;
+  font-size: 12px;
+  line-height: 16px;
+  box-shadow: 0 1px 2px rgba(0,0,0,.04);
+  word-wrap: break-word;
+}
+
+/* Анимация появления */
+@keyframes riseIn {
+  0%   { opacity: 0; transform: translateY(20px); }
+  70%  { opacity: 1; transform: translateY(4px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.msg.anim-in {
+  animation: riseIn .35s cubic-bezier(.25,.1,.25,1);
+}
+
+/* --- HOTFIX: вернуть контент поверх жёлтой фигуры --- */
+.bg-figure,
+.bg-figure * {
+  pointer-events: none;          /* фон не перехватывает клики */
+}
+
+.hero {
+  position: relative;            /* создаём свой слой */
+  z-index: 3;                    /* выше фоновой фигуры */
+}
+
+header {
+  position: relative;
+  z-index: 5;                    /* шапка всегда сверху */
+}
+
+/* ----- Fine tune chat stream position ----- */
+.chat-active .chat-stream {
+  display: flex;
+  flex-direction: column-reverse;
+  position: fixed;
+  left: 50%;
+  transform: translateX(-45%);     /* ← чуть вправо (~4%) */
+  width: var(--input-w, 600px);
+  bottom: calc(54px + 60px);       /* ↑ чуть выше — отступ 40px */
+  height: calc(100vh - 180px);     /* поднимаем общий блок */
+  overflow-y: hidden;
+  overflow-x: hidden;
+  z-index: 2;
+}
