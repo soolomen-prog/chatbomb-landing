@@ -150,8 +150,10 @@ header{ position:relative; z-index:5; }
 
 /* ---------- Chat layout ---------- */
 .chat-active .chatbar{
-  position:fixed; left:50%; transform:translateX(-50%); 
-  bottom:calc(20px + var(--kb));               /* учитываем клавиатуру */
+  position:fixed;
+  left:50%;
+  transform:translateX(-50%);
+  bottom:calc(10px + var(--kb) * 0.7);   /* уменьшили отступ, делаем плавнее */
   z-index:6;
 }
 .chat-mode .headline, .chat-mode .subhead{
@@ -161,12 +163,16 @@ header{ position:relative; z-index:5; }
 /* Messages stream */
 .chat-stream{ display:none; }
 .chat-active .chat-stream{
-  display:flex; flex-direction:column-reverse;
-  position:fixed; left:50%; transform:translateX(-45%);
+  display:flex;
+  flex-direction:column-reverse;
+  position:fixed;
+  left:50%;
+  transform:translateX(-45%);
   width:var(--input-w, 600px);
-  bottom:calc(var(--chatbar-h) + 60px + var(--kb));  /* тоже поднимаем */
+  bottom:calc(var(--chatbar-h) + 40px + var(--kb) * 0.7); /* немного прижали поток */
   height:calc(100vh - 180px);
-  overflow:hidden; z-index:2;
+  overflow:hidden;
+  z-index:2;
 }
 .messages{ display:flex; flex-direction:column; justify-content:flex-end; gap:20px; width:100%; }
 .msg{ display:flex; align-items:flex-start; gap:10px; width:100%; }
