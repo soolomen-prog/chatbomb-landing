@@ -331,3 +331,44 @@ header{ position:relative; z-index:5; }
 @media (max-width:640px){
   input, textarea, select { font-size:16px !important; }
 }
+/* ===== iOS: не дёргать макет при появлении клавиатуры ===== */
+
+/* чтобы iOS не “резиновал” документ при скролле с клавой */
+html, body { overscroll-behavior: none; }
+
+/* базовая переменная для top с учётом visualViewport (см. JS) */
+body { --vv-top: 0px; }
+
+/* фиксируем шапку, чтобы не “ездил” только header */
+header{
+  position: sticky;
+  top: var(--vv-top);
+  z-index: 10;
+}
+
+/* по умолчанию (без клавиатуры) ты уже используешь var(--kb);
+   при открытой клавиатуре отключаем влияние var(--kb) вообще */
+.kb-open .chatbar{
+  bottom: calc(max(8px, env(safe-area-inset-bottom)));
+}
+@media (max-width:640px){
+  .kb-open .chatbar{
+    left: 0; right: 0; transform: none;
+    bottom: calc(max(12px, env(safe-area-inset-bottom)));
+    padding: 0 16px;
+  }
+}
+
+/* поток сообщений — отступ только от фактической высоты бара */
+.kb-open .chat-stream{
+  bottom: calc(var(--chatbar-h) + 36px);
+}
+@media (max-width:640px){
+  .kb-open .chat-stream{
+    left: 0; transform: none; width: 100vw; padding: 0 16px;
+    bottom: calc(var(--chatbar-h) + 48px);
+  }
+}
+
+/* чат-бар всегда поверх всего, чтобы не перекрывался */
+.chatbar { z-index: 20; }
