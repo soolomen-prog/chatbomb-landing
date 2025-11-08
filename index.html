@@ -316,5 +316,55 @@
     window.open(link,'_blank');
   });
   </script>
+
+<script>
+/* iOS keyboard fix: keep chatbar visible while the keyboard is open */
+(function () {
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  if (!isIOS) return;
+
+  const chatbar = document.querySelector('.chatbar');
+  const hero    = document.querySelector('.hero');
+  const ta      = document.getElementById('prompt');
+  if (!chatbar || !hero || !ta) return;
+
+  let prevScroll = 0;
+
+  function onFocus() {
+    prevScroll = window.scrollY || 0;
+
+    // замораживаем страницу на текущем месте
+    document.body.style.height = '100vh';
+    document.body.style.overflow = 'hidden';
+
+    // переводим фиксированные элементы в absolute
+    chatbar.style.position = 'absolute';
+    chatbar.style.bottom   = '0';
+    hero.style.position    = 'absolute';
+    hero.style.top         = prevScroll + 'px';
+
+    // не даём Safari дернуть страницу
+    window.scrollTo(0, prevScroll);
+  }
+
+  function onBlur() {
+    // возвращаем всё как было
+    document.body.style.height  = '';
+    document.body.style.overflow = '';
+
+    chatbar.style.position = '';
+    chatbar.style.bottom   = '';
+    hero.style.position    = '';
+    hero.style.top         = '';
+
+    window.scrollTo(0, prevScroll);
+  }
+
+  ta.addEventListener('focus', onFocus, { passive: true });
+  ta.addEventListener('blur',  onBlur,  { passive: true });
+})();
+</script>
+
+
 </body>
 </html>
