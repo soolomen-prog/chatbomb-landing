@@ -353,3 +353,22 @@ header{ position:relative; z-index:5; }
   }
   .msg.bot.anim-in .bot-ic{ animation:none; }
 }
+/* iOS anti-zoom: любой ввод ≥16px, иначе Safari зумит */
+@media (max-width:640px){
+  input, textarea, select { font-size:16px !important; }
+
+  /* начальное положение */
+  .entry textarea{
+    font-size:16px !important;   /* было 16, закрепим */
+    line-height:54px;             /* остаётся как было */
+  }
+
+  /* пин-режим (у нас тут стояло 12px — из-за этого и зумило) */
+  .chat-active .entry textarea{
+    font-size:16px !important;    /* ключевая строка */
+    line-height:40px;             /* высота поля = 40px */
+  }
+}
+
+/* на iOS иногда помогает ещё это, чтобы не «подпиливал» масштаб шрифта */
+html { -webkit-text-size-adjust: 100%; }
