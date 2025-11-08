@@ -29,9 +29,8 @@
   --input-w:600px;
   --link-hover:#7BA9FF;
 
-  /* runtime vars */
+  /* runtime */
   --chatbar-h:54px;
-  --kb:0px;
 }
 
 /* ---------- Base ---------- */
@@ -43,6 +42,7 @@ body{
   font-family:"TT Firs Neue",sans-serif;
   color:var(--ink);
   background:var(--bg);
+  --vv-top: 0px; /* для sticky header */
 }
 
 /* ---------- Background ---------- */
@@ -50,7 +50,7 @@ body{
 .bg-figure img{ position:absolute; width:2250px; max-width:none; top:-760px; right:-420px; }
 
 /* ---------- Header ---------- */
-header{ position:relative; z-index:5; }
+header{ position:sticky; top:var(--vv-top); z-index:10; will-change:transform; transform:translateZ(0); backface-visibility:hidden; }
 .header-inner{ display:flex; align-items:center; justify-content:space-between; padding:22px 22px 0; }
 .logo img{ width:auto; height:28px; }
 
@@ -75,6 +75,7 @@ header{ position:relative; z-index:5; }
 .chatbar{
   display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:14px;
   margin:20px auto; width:fit-content;
+  will-change:transform,opacity; transform:translateZ(0); backface-visibility:hidden;
 }
 .info-badge{ position:relative; display:flex; align-items:center; }
 .info-dot{
@@ -147,9 +148,8 @@ header{ position:relative; z-index:5; }
   position:fixed;
   left:50%;
   transform:translateX(-50%);
-  /* минимальный отступ + safe-area + доля высоты клавиатуры */
-  bottom:calc(max(8px, env(safe-area-inset-bottom)) + var(--kb) * .5);
-  z-index:6;
+  bottom:calc(max(12px, env(safe-area-inset-bottom)));
+  z-index:20;
 }
 .chat-mode .headline, .chat-mode .subhead{
   opacity:0; transform:translateY(10px); pointer-events:none; transition:opacity .25s ease, transform .25s ease;
@@ -161,7 +161,7 @@ header{ position:relative; z-index:5; }
   display:flex; flex-direction:column-reverse;
   position:fixed; left:50%; transform:translateX(-45%);
   width:var(--input-w, 600px);
-  bottom:calc(var(--chatbar-h) + 36px + var(--kb) * .5);
+  bottom:calc(var(--chatbar-h) + 36px);
   height:calc(100vh - 180px);
   overflow:hidden; z-index:2;
 }
@@ -209,7 +209,6 @@ header{ position:relative; z-index:5; }
 /* hotfix layering */
 .bg-figure, .bg-figure *{ pointer-events:none; }
 .hero{ position:relative; z-index:3; }
-header{ position:relative; z-index:5; }
 
 /* =====================  MOBILE  ===================== */
 @media (max-width:640px){
@@ -229,9 +228,10 @@ header{ position:relative; z-index:5; }
   .business .biz-caret{ position:absolute; right:18px; top:50%; transform:translateY(-50%); }
 
   /* pinned layout */
+  .chat-active header{ position:fixed; top:calc(env(safe-area-inset-top)); left:0; right:0; }
   .chat-active .chatbar{
     position:fixed; left:0; right:0; transform:none;
-    bottom:calc(max(12px, env(safe-area-inset-bottom)) + var(--kb));
+    bottom:calc(max(12px, env(safe-area-inset-bottom)));
     padding:0 16px;
     grid-template-columns:58px 1fr auto; gap:8px;
   }
@@ -253,8 +253,6 @@ header{ position:relative; z-index:5; }
     width:18px !important; height:12px !important; flex:0 0 14px !important;
     stroke-width:2.5; vector-effect:non-scaling-stroke;
   }
-  .chat-active .business.open .biz-caret{ transform:rotate(180deg) !important; }
-
   .chat-active .business.open,
   .chat-active .business:active,
   .chat-active .business:hover{ background:var(--ink); color:#fff; }
@@ -272,21 +270,23 @@ header{ position:relative; z-index:5; }
 
   .chat-active .chat-stream{
     left:0; transform:none; width:100vw; padding:0 16px;
-    bottom:calc(var(--chatbar-h) + 48px + var(--kb));
+    bottom:calc(var(--chatbar-h) + 48px);
   }
 
   /* bot avatar inside bubble */
+  .msg.bot{ position:relative; }
+  .msg.bot .bubble{ padding-right:34px; }
   .msg.bot .bot-ic{
-    width:16px; height:16px; position:absolute; right:6px; top:6px; margin:0;
+    width:16px; height:16px; position:absolute; right:6px; top:6px; margin:0; z-index:3; transition:none;
   }
 }
 
-/* dropdown over bar */
+/* dropdown over bar (mobile) */
 @media (max-width:640px){
   .chat-active .business .dropdown{
     position:fixed !important;
     left:16px !important; right:16px !important;
-    bottom:calc(max(12px, env(safe-area-inset-bottom)) + var(--chatbar-h) + 8px + var(--kb)) !important;
+    bottom:calc(max(12px, env(safe-area-inset-bottom)) + var(--chatbar-h) + 8px) !important;
     transform:none !important; width:auto !important;
     max-height:50vh; overflow:auto; z-index:1000; border-radius:12px; box-shadow:var(--shadow);
   }
@@ -309,7 +309,7 @@ header{ position:relative; z-index:5; }
 .map-card .map-open{ display:inline-block; margin-top:6px; color:#7BA9FF; text-decoration:none; }
 .map-card .map-open:hover{ text-decoration:underline; }
 
-/* info icon in dropdown (24px on mobile) */
+/* info icon in dropdown (24px on mobile, 26px desktop – остается слева от кнопки) */
 @media (max-width:640px){
   .dropdown .opt.active .opt-info{
     display:inline-flex !important; align-items:center; justify-content:center;
@@ -319,56 +319,7 @@ header{ position:relative; z-index:5; }
   .dropdown .opt.active .opt-info:hover{ background-color:#f7f7f7; }
 }
 
-/* mobile: bot avatar not flying away */
-@media (max-width:640px){
-  .msg.bot{ position:relative; }
-  .msg.bot .bubble{ padding-right:34px; }
-  .msg.bot .bot-ic{ position:absolute; right:6px; top:6px; width:16px; height:16px; margin:0; z-index:3; transition:none; }
-  .msg.bot.anim-in .bot-ic{ animation:none; }
-}
-
 /* iOS anti-zoom */
 @media (max-width:640px){
   input, textarea, select { font-size:16px !important; }
 }
-/* ===== iOS: не дёргать макет при появлении клавиатуры ===== */
-
-/* чтобы iOS не “резиновал” документ при скролле с клавой */
-html, body { overscroll-behavior: none; }
-
-/* базовая переменная для top с учётом visualViewport (см. JS) */
-body { --vv-top: 0px; }
-
-/* фиксируем шапку, чтобы не “ездил” только header */
-header{
-  position: sticky;
-  top: var(--vv-top);
-  z-index: 10;
-}
-
-/* по умолчанию (без клавиатуры) ты уже используешь var(--kb);
-   при открытой клавиатуре отключаем влияние var(--kb) вообще */
-.kb-open .chatbar{
-  bottom: calc(max(8px, env(safe-area-inset-bottom)));
-}
-@media (max-width:640px){
-  .kb-open .chatbar{
-    left: 0; right: 0; transform: none;
-    bottom: calc(max(12px, env(safe-area-inset-bottom)));
-    padding: 0 16px;
-  }
-}
-
-/* поток сообщений — отступ только от фактической высоты бара */
-.kb-open .chat-stream{
-  bottom: calc(var(--chatbar-h) + 36px);
-}
-@media (max-width:640px){
-  .kb-open .chat-stream{
-    left: 0; transform: none; width: 100vw; padding: 0 16px;
-    bottom: calc(var(--chatbar-h) + 48px);
-  }
-}
-
-/* чат-бар всегда поверх всего, чтобы не перекрывался */
-.chatbar { z-index: 20; }

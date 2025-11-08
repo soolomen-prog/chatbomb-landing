@@ -168,23 +168,6 @@
   window.addEventListener('resize', setLayoutVars);
   setLayoutVars();
 
-  /* ====== keyboard height via visualViewport ====== */
-  function updateKb(){
-    const vv = window.visualViewport;
-    if(!vv){ root.style.setProperty('--kb','0px'); return; }
-    const kb = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
-    root.style.setProperty('--kb', kb + 'px');
-    if(document.activeElement === promptEl){
-      setTimeout(()=>promptEl.scrollIntoView({block:'nearest', behavior:'smooth'}), 0);
-    }
-  }
-  if(window.visualViewport){
-    visualViewport.addEventListener('resize', updateKb);
-    visualViewport.addEventListener('scroll', updateKb);
-  }
-  promptEl.addEventListener('focus', ()=>setTimeout(updateKb, 50));
-  promptEl.addEventListener('blur',  ()=>root.style.setProperty('--kb','0px'));
-
   /* ====== messages ====== */
   function buildBubbleHTML({text='',images=null,file=null}){
     let html=`<div class="bubble">`;
@@ -213,7 +196,7 @@
     document.body.classList.add('chat-active');
     hero.classList.add('chat-mode');
     setLayoutVars();
-    updateKb();
+    forcePaint(); // важный «пинок» слоям на iOS
   }
 
   function addMessage(content,role='user'){
@@ -275,6 +258,7 @@
     promptEl.value='';
     if(!handleCommands(text)){ fakeBotReply(); }
     promptEl.focus();
+    forcePaint(); // удерживаем слои видимыми после отправки
   }
 
   document.getElementById('send').addEventListener('click',sendCurrent);
@@ -285,7 +269,7 @@
   window.addEventListener('load',()=>{
     promptEl.focus();
     setLayoutVars();
-    updateKb();
+    forcePaint();
   });
   </script>
 
@@ -315,52 +299,44 @@
     window.open(link,'_blank');
   });
   </script>
-<script>
-/* iOS-friendly режим: без вычислений высоты клавиатуры */
-(function () {
-  const root = document.documentElement;
-  const body = document.body;
-  const ta   = document.getElementById('prompt');
 
-  // Держим header на месте, учитывая сдвиг visualViewport сверху
-  function syncHeaderTop(){
-    if (!window.visualViewport) return;
-    root.style.setProperty('--vv-top', (visualViewport.offsetTop || 0) + 'px');
-  }
+  <!-- iOS paint/compositing & keyboard friendly toggling -->
+  <script>
+  (function () {
+    const body  = document.body;
+    const ta    = document.getElementById('prompt');
+    const bar   = document.getElementById('chatbar');
+    const head  = document.querySelector('header');
 
-  // Помечаем, что клавиатура открыта/закрыта, без передвижения макета
-  function setKbOpen(isOpen){
-    body.classList.toggle('kb-open', !!isOpen);
-    // пересчитываем высоту чат-бара для отступа потока
-    const bar = document.getElementById('chatbar');
-    if (bar){
-      root.style.setProperty('--chatbar-h',
-        Math.round(bar.getBoundingClientRect().height) + 'px'
-      );
+    function recalcBarHeight(){
+      if (!bar) return;
+      const h = Math.round(bar.getBoundingClientRect().height);
+      document.documentElement.style.setProperty('--chatbar-h', h + 'px');
     }
-  }
 
-  // События visualViewport — только для синхронизации шапки
-  if (window.visualViewport){
-    visualViewport.addEventListener('resize',  syncHeaderTop);
-    visualViewport.addEventListener('scroll',  syncHeaderTop);
-    syncHeaderTop();
-  }
+    function forcePaint(){
+      if (bar)  bar.style.transform  = 'translateZ(0)';
+      if (head) head.style.transform = 'translateZ(0)';
+      requestAnimationFrame(() => {
+        const x = window.scrollX, y = window.scrollY;
+        window.scrollTo(x, y + 1);
+        window.scrollTo(x, y);
+      });
+    }
+    window.forcePaint = forcePaint; // используем сверху
 
-  // На фокус показываем kb-open, на blur — снимаем.
-  if (ta){
-    ta.addEventListener('focus', () => {
-      setKbOpen(true);
-      // Чтобы поле точно попадало в область видимости
-      setTimeout(() => ta.scrollIntoView({ block: 'nearest', behavior: 'smooth' }), 0);
-    });
-    ta.addEventListener('blur',  () => setKbOpen(false));
-  }
+    if (ta){
+      ta.addEventListener('focus', () => { body.classList.add('kb-open');  recalcBarHeight(); forcePaint(); });
+      ta.addEventListener('blur',  () => { body.classList.remove('kb-open'); recalcBarHeight(); forcePaint(); });
+    }
 
-  // Пересчёт высоты барa при ресайзе (поворот экрана и т.п.)
-  window.addEventListener('resize', () => setKbOpen(body.classList.contains('kb-open')));
-})();
-</script>
+    const mo = new MutationObserver(() => { recalcBarHeight(); forcePaint(); });
+    mo.observe(body, { attributes: true, attributeFilter: ['class'] });
 
+    window.addEventListener('resize', recalcBarHeight);
+    window.addEventListener('orientationchange', recalcBarHeight);
+    recalcBarHeight();
+  })();
+  </script>
 </body>
 </html>
