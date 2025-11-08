@@ -1,368 +1,480 @@
 /* ---------- Fonts ---------- */
-@font-face {
-  font-family: "TT Firs Neue";
-  src: url("./assets/fonts/TT Firs Neue Regular.woff2") format("woff2");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
+@font-face{
+  font-family:"TT Firs Neue";
+  src:url("./assets/fonts/TT Firs Neue Regular.woff2") format("woff2");
+  font-weight:400; font-style:normal; font-display:swap;
 }
-@font-face {
-  font-family: "TT Firs Neue";
-  src: url("./assets/fonts/TT Firs Neue Medium.woff2") format("woff2");
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
+@font-face{
+  font-family:"TT Firs Neue";
+  src:url("./assets/fonts/TT Firs Neue Medium.woff2") format("woff2");
+  font-weight:500; font-style:normal; font-display:swap;
 }
-@font-face {
-  font-family: "TT Firs Neue";
-  src: url("./assets/fonts/TT Firs Neue Bold.woff2") format("woff2");
-  font-weight: 800;
-  font-style: normal;
-  font-display: swap;
+@font-face{
+  font-family:"TT Firs Neue";
+  src:url("./assets/fonts/TT Firs Neue Bold.woff2") format("woff2");
+  font-weight:800; font-style:normal; font-display:swap;
 }
 
 /* ---------- Theme ---------- */
-:root {
-  --bg: #F0BDFF;
-  --ink: #19132F;
-  --muted: #969696;
-  --black: #0B0B0B;
-  --yellow: #FBE456;
-  --blue-soft: #DEF7FF;
-  --white: #FFFFFF;
-  --shadow: 0 4px 34px rgba(0,0,0,0.15);
-  --radius: 27px;
-  --input-w: 600px;
+:root{
+  --bg:#F0BDFF;
+  --ink:#19132F;
+  --muted:#969696;
+  --black:#0B0B0B;
+  --yellow:#FBE456;
+  --blue-soft:#DEF7FF;
+  --white:#FFFFFF;
+  --shadow:0 4px 34px rgba(0,0,0,.15);
+  --radius:27px;
+  --input-w:600px;
+  --link-hover:#7BA9FF;
 }
 
 /* ---------- Base ---------- */
-* { box-sizing: border-box; }
-html, body { height: 100%; overflow-x: hidden; }
-body {
-  margin: 0;
-  font-family: "TT Firs Neue", sans-serif;
-  color: var(--ink);
-  background: var(--bg);
+*{ box-sizing:border-box; }
+html,body{ height:100%; overflow-x:hidden; }
+body{
+  margin:0;
+  font-family:"TT Firs Neue",sans-serif;
+  color:var(--ink);
+  background:var(--bg);
 }
 
 /* ---------- Background ---------- */
-.bg-figure {
-  position: absolute;
-  inset: 0;
-  height: 100vh;
-  overflow: hidden;
-  z-index: 1;
-}
-.bg-figure img {
-  position: absolute;
-  width: 2250px;
-  max-width: none;
-  top: -760px;
-  right: -420px;
-}
+.bg-figure{ position:absolute; inset:0; height:100vh; overflow:hidden; z-index:1; }
+.bg-figure img{ position:absolute; width:2250px; max-width:none; top:-760px; right:-420px; }
 
 /* ---------- Header ---------- */
-header { position: relative; z-index: 5; }
-.header-inner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 22px 22px 0;
-}
-.logo img { width: 216px; height: 28px; }
+header{ position:relative; z-index:5; }
+.header-inner{ display:flex; align-items:center; justify-content:space-between; padding:22px 22px 0; }
+.logo img{ width:auto; height:28px; }
 
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 44px;
-  padding: 0 22px;
-  border-radius: 999px;
-  border: 1px solid var(--ink);
-  background: transparent;
-  color: var(--ink);
-  font: 400 16px/1 "TT Firs Neue", sans-serif;
-  cursor: pointer;
-  transition: .2s ease;
-  user-select: none;
+/* ---------- Buttons ---------- */
+.btn{
+  display:inline-flex; align-items:center; justify-content:center;
+  height:44px; padding:0 22px; border-radius:999px;
+  border:1px solid var(--ink); background:transparent; color:var(--ink);
+  font:400 16px/1 "TT Firs Neue",sans-serif; cursor:pointer; transition:.2s ease; user-select:none;
 }
-.btn:hover {
-  background: var(--black);
-  color: #fff;
-  transform: translateY(-1px);
-  box-shadow: 0 10px 24px rgba(0,0,0,.18);
-}
+.btn:hover{ background:var(--black); color:#fff; transform:translateY(-1px); box-shadow:0 10px 24px rgba(0,0,0,.18); }
 
 /* ---------- Hero ---------- */
-.hero {
-  text-align: center;
-  min-height: calc(100vh - 80px);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 0 20px;
+.hero{
+  text-align:center; min-height:calc(100vh - 80px);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; padding:0 20px;
 }
-.headline {
-  font-weight: 800;
-  font-size: 46px;
-  line-height: 56px;
-  max-width: 880px;
-  margin: 0 auto 12px;
-}
-.subhead {
-  font-weight: 400;
-  font-size: 18px;
-  line-height: 26px;
-  max-width: 880px;
-  margin: 0 auto 40px;
-}
+.headline{ font-weight:800; font-size:46px; line-height:56px; max-width:880px; margin:0 auto 12px; }
+.subhead{ font-weight:400; font-size:18px; line-height:26px; max-width:880px; margin:0 auto 40px; }
 
 /* ---------- Chat bar ---------- */
-.chatbar {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: 14px;
-  margin: 20px auto;
-  width: fit-content;
+.chatbar{
+  display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:14px;
+  margin:20px auto; width:fit-content;
+}
+.info-badge{ position:relative; display:flex; align-items:center; }
+.info-dot{
+  width:26px; height:26px; border-radius:50%; border:1px solid var(--ink);
+  display:grid; place-items:center; margin-right:10px; cursor:pointer; transition:.2s; background:transparent;
+}
+.info-dot:hover{ background:var(--black); }
+.info-dot img{ width:14px; height:14px; transition:.2s; }
+.info-dot:hover img{ filter:invert(86%) sepia(83%) saturate(639%) hue-rotate(2deg) brightness(102%) contrast(97%); }
+
+/* --- business select (button) --- */
+.business{
+  width:218px; height:54px; border-radius:var(--radius);
+  border:1px solid var(--ink); background:transparent;
+  display:flex; align-items:center; padding:0 18px; gap:10px; cursor:pointer; position:relative;
+  transition:background .2s, color .2s, border-color .2s;
+  color:var(--ink);
+}
+.business span#bizLabel{
+  flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-align:left;
+}
+.biz-caret{ width:16px; height:16px; transition:transform .2s, stroke .2s; }
+.business:hover{ background:var(--ink); border-color:var(--ink); }
+.business:hover span#bizLabel{ color:#fff; }
+.business:hover .biz-caret{ stroke:#fff; }
+.business.open .biz-caret{ transform:rotate(180deg); }
+
+/* icons in button (used on mobile in chat-active) */
+.biz-ic{ width:0; height:0; display:none; background-size:contain; background-repeat:no-repeat; }
+.business.biz-fahrschule .biz-ic{ background-image:url("./assets/images/icon prof fahr.svg"); }
+.business.biz-shop      .biz-ic{ background-image:url("./assets/images/icon prof shop.svg"); }
+.business.biz-zahnarzt  .biz-ic{ background-image:url("./assets/images/icon prof zahn.svg"); }
+.business.biz-handwerk  .biz-ic{ background-image:url("./assets/images/icon prof werk.svg"); }
+
+/* --- dropdown (text-only) --- */
+.dropdown{
+  position:absolute; left:0; right:0; bottom:calc(100% + 10px);
+  background:var(--white); border-radius:12px; box-shadow:var(--shadow); overflow:hidden; display:none; text-align:left;
+  color:var(--ink);
+}
+.dropdown.open{ display:block; }
+.dropdown .opt{
+  font-size:16px; line-height:34px; padding:8px 16px; cursor:pointer; display:flex; align-items:center; justify-content:space-between;
+  color:var(--ink);
+}
+.dropdown .opt:hover{ background:var(--blue-soft); }
+.dropdown .opt.active{ background:var(--blue-soft); font-weight:600; }
+/* info only for active item (mobile) */
+.opt-info{
+  width:20px; height:20px; border:none; background:transparent url("./assets/images/icon info.svg") center/20px 20px no-repeat; cursor:pointer;
+  flex:0 0 20px; display:none;
 }
 
-.info-badge { position: relative; display: flex; align-items: center; }
-.info-dot {
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  border: 1px solid var(--ink);
-  display: grid;
-  place-items: center;
-  margin-right: 10px;
-  cursor: pointer;
-  transition: .2s;
-  background: transparent;
+/* Tooltip (desktop) */
+.tooltip{
+  position:absolute; left:0; bottom:calc(100% + 10px); width:260px;
+  background:#fff; border-radius:12px; box-shadow:var(--shadow); padding:16px 20px; text-align:left; pointer-events:auto; z-index:20; line-height:1.4;
 }
-.info-dot:hover { background: var(--black); }
-.info-dot img { width: 14px; height: 14px; transition: .2s; }
-.info-dot:hover img {
-  filter: invert(86%) sepia(83%) saturate(639%) hue-rotate(2deg) brightness(102%) contrast(97%);
-}
+.tooltip p{ margin:0; text-align:left; }
 
-.business {
-  width: 218px;
-  height: 54px;
-  border-radius: var(--radius);
-  border: 1px solid var(--ink);
-  background: transparent;
-  display: flex;
-  align-items: center;
-  padding: 0 18px;
-  gap: 10px;
-  cursor: pointer;
-  position: relative;
-  transition: background .2s, color .2s, border-color .2s;
+/* entry & send */
+.entry{ width:582px; position:relative; display:flex; align-items:center; }
+.entry textarea{
+  width:100%; height:54px; resize:none; padding:0 20px; border-radius:var(--radius); border:none; outline:none;
+  font:400 16px/54px "TT Firs Neue",sans-serif; color:var(--ink); background:#fff; transition:border-radius .2s, box-shadow .2s;
 }
-.business span {
-  flex: 1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  text-align: left;
-}
-.business svg { width: 16px; height: 16px; transition: transform .2s, stroke .2s; }
-.business:hover {
-  background: var(--ink);
-  border-color: var(--ink);
-}
-.business:hover span { color: #fff; }
-.business:hover svg { stroke: #fff; }
-.business.open svg { transform: rotate(180deg); }
+.entry textarea::placeholder{ color:var(--muted); }
 
-/* Dropdown */
-.dropdown {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: calc(100% + 10px);
-  background: var(--white);
-  border-radius: 12px;
-  box-shadow: var(--shadow);
-  overflow: hidden;
-  display: none;
-  text-align: left;
+.send{
+  width:200px; height:54px; border-radius:var(--radius); border:1px solid var(--ink); background:var(--ink); color:#fff;
+  font:400 16px/1 "TT Firs Neue",sans-serif; cursor:pointer; transition:.2s;
 }
-.dropdown.open { display: block; }
-.dropdown .opt {
-  font-size: 16px;
-  line-height: 34px;
-  padding: 8px 16px;
-  cursor: pointer;
-  text-align: left;
-}
-.dropdown .opt:hover { background: var(--blue-soft); }
-.dropdown .opt.active {
-  background: var(--blue-soft);
-  font-weight: 600;
-}
-
-/* Tooltip */
-.tooltip {
-  position: absolute;
-  left: 0;
-  bottom: calc(100% + 10px);
-  width: 260px;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: var(--shadow);
-  padding: 16px 20px;
-  text-align: left;
-  pointer-events: auto;
-  z-index: 20;
-  line-height: 1.4;
-}
-.tooltip p { margin: 0; text-align: left; }
-
-.entry {
-  width: 582px;
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-.entry textarea {
-  width: 100%;
-  height: 54px;
-  resize: none;
-  padding: 0 20px;
-  border-radius: var(--radius);
-  border: none;
-  outline: none;
-  font-family: "TT Firs Neue", sans-serif;
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 54px;
-  color: var(--ink);
-  background: #fff;
-  transition: border-radius .2s, box-shadow .2s;
-}
-.entry textarea::placeholder { color: var(--muted); }
-
-.send {
-  width: 200px;
-  height: 54px;
-  border-radius: var(--radius);
-  border: 1px solid var(--ink);
-  background: var(--ink);
-  color: #fff;
-  font-family: "TT Firs Neue", sans-serif;
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 1;
-  cursor: pointer;
-  transition: .2s;
-}
-.send:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 24px rgba(0,0,0,.18);
-}
+.send:hover{ transform:translateY(-1px); box-shadow:0 10px 24px rgba(0,0,0,.18); }
 
 /* ---------- Chat layout ---------- */
-.chat-active .chatbar {
-  position: fixed;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: 20px;
-  z-index: 6;
+.chat-active .chatbar{
+  position:fixed; left:50%; transform:translateX(-50%); bottom:20px; z-index:6;
 }
-.chat-mode .headline,
-.chat-mode .subhead {
-  opacity: 0;
-  transform: translateY(10px);
-  pointer-events: none;
-  transition: opacity .25s ease, transform .25s ease;
+.chat-mode .headline, .chat-mode .subhead{
+  opacity:0; transform:translateY(10px); pointer-events:none; transition:opacity .25s ease, transform .25s ease;
 }
 
-/* Поток сообщений = ширина поля ввода, отступ 20px */
-.chat-stream { display: none; }
-.chat-active .chat-stream {
-  display: flex;
-  flex-direction: column-reverse;
-  position: fixed;
-  left: 50%;
-  transform: translateX(-50%);
-  width: var(--input-w, 600px);
-  bottom: calc(54px + 20px);
-  height: calc(100vh - 160px);
-  overflow-y: hidden;
-  overflow-x: hidden;
-  z-index: 2;
+/* Messages stream */
+.chat-stream{ display:none; }
+.chat-active .chat-stream{
+  display:flex; flex-direction:column-reverse;
+  position:fixed; left:50%; transform:translateX(-45%);
+  width:var(--input-w, 600px);
+  bottom:calc(54px + 60px);
+  height:calc(100vh - 180px);
+  overflow:hidden; z-index:2;
+}
+.messages{ display:flex; flex-direction:column; justify-content:flex-end; gap:20px; width:100%; }
+.msg{ display:flex; align-items:flex-start; gap:10px; width:100%; }
+.msg.user{ justify-content:flex-start; }
+.msg.bot{ justify-content:flex-end; }
+
+.msg .bubble{
+  background:#fff; color:var(--ink); border-radius:16px; padding:12px 16px;
+  max-width:calc(var(--input-w, 600px) * 0.7);
+  text-align:left; font-size:12px; line-height:16px; box-shadow:0 1px 2px rgba(0,0,0,.04); word-wrap:break-word; position:relative;
+}
+.msg.bot .bot-ic{ width:24px; height:24px; margin-left:6px; }
+
+/* Gallery & file */
+.gallery{ display:grid; gap:8px; margin-bottom:10px; }
+.gallery.cols-1{ grid-template-columns:1fr; }
+.gallery.cols-2{ grid-template-columns:1fr 1fr; }
+.gallery.cols-3{ grid-template-columns:repeat(3,1fr); }
+.gallery.cols-4{ grid-template-columns:repeat(4,1fr); }
+.gallery.cols-5{ grid-template-columns:repeat(5,1fr); }
+.gallery.cols-6{ grid-template-columns:repeat(6,1fr); }
+.g-item{ overflow:hidden; border-radius:12px; }
+.g-item img{ display:block; width:100%; height:100%; object-fit:cover; }
+
+.file{
+  display:inline-flex; align-items:center; gap:10px; text-decoration:none; color:inherit;
+  background:#fff; border-radius:14px; padding:10px 14px; border:1px solid rgba(0,0,0,0.08); transition:color .2s, box-shadow .2s, transform .2s;
+}
+.file:hover .file-name{ color:var(--link-hover); }
+.file-ic{ width:28px; height:28px; display:grid; place-items:center; background:transparent; border:none; }
+.file-ic img{ width:28px; height:28px; display:block; }
+
+.gap10{ height:10px; }
+
+/* animation */
+@keyframes riseIn{
+  0%{ opacity:0; transform:translateY(20px); }
+  70%{ opacity:1; transform:translateY(4px); }
+  100%{ opacity:1; transform:translateY(0); }
+}
+.msg.anim-in{ animation:riseIn .35s cubic-bezier(.25,.1,.25,1); }
+
+/* hotfix layering */
+.bg-figure, .bg-figure *{ pointer-events:none; }
+.hero{ position:relative; z-index:3; }
+header{ position:relative; z-index:5; }
+
+/* =====================  MOBILE  ===================== */
+@media (max-width:640px){
+  .logo img{ height:22px; }
+  .headline{ font-size:32px; line-height:40px; }
+  .subhead{ margin-bottom:40px; }
+
+  /* initial — три ряда на всю ширину */
+  .chatbar{
+    width:100vw; max-width:100vw; margin:0; padding:0 16px;
+    grid-template-columns:1fr; gap:10px; box-sizing:border-box;
+  }
+  .info-dot{ display:none; }
+  .business, .entry, .send{ width:100%; }
+
+  /* кнопка — выравнивание текста и каретки */
+  .business{ justify-content:flex-start; }
+  .business #bizLabel{ text-align:left; }
+  .business .biz-caret{
+    position:absolute; right:18px; top:50%; transform:translateY(-50%);
+  }
+
+  /* После первого сообщения — вниз, в одну линию */
+  .chat-active .chatbar{
+    position:fixed; left:0; right:0; transform:none; bottom:20px; padding:0 16px;
+    grid-template-columns:58px 1fr auto; gap:8px;
+  }
+
+  /* узкая кнопка профессий: по умолчанию только обводка */
+  .chat-active .business{
+    width:58px; height:40px; border-radius:20px; padding:0 10px;
+    display:flex; align-items:center; justify-content:center;
+    background:transparent; border-color:var(--ink); color:var(--ink);
+    position:relative;
+  }
+  .chat-active .business #bizLabel{ display:none; }
+
+  /* Иконка фикс 22×22, не тянется */
+  .chat-active .business .biz-ic{
+    display:block !important;
+    width:22px !important;
+    height:22px !important;
+    flex:0 0 22px !important;
+    background-size:contain; background-repeat:no-repeat; background-position:center;
+    margin-left:0;
+  }
+
+  /* Каретка компактная 12×4, у правого края */
+  .chat-active .business .biz-caret{
+    width:12px !important;
+    height:4px !important;
+    flex:0 0 12px !important;
+    margin-left:auto; margin-right:0;
+    stroke:currentColor; stroke-width:2;
+    transform:none;
+  }
+  .chat-active .business.open .biz-caret{ transform:rotate(180deg); }
+
+  /* при открытии/нажатии — заливка и белая каретка */
+  .chat-active .business.open,
+  .chat-active .business:active,
+  .chat-active .business:hover{
+    background:var(--ink); color:#fff;
+  }
+  .chat-active .business.open .biz-caret,
+  .chat-active .business:active .biz-caret,
+  .chat-active .business:hover .biz-caret{
+    stroke:#fff;
+  }
+
+  .chat-active .entry textarea{ height:40px; line-height:40px; border-radius:20px; font-size:12px; }
+  .chat-active .send{ height:40px; border-radius:20px; font-size:12px; padding:0 16px; }
+
+  /* dropdown — на ширину экрана */
+  .chat-active .business .dropdown{
+    left:50%; right:auto; transform:translateX(-50%); width:calc(100vw - 32px);
+  }
+  .opt-info{ display:inline-block; }
+
+  /* поток сообщений — на всю ширину */
+  .chat-active .chat-stream{
+    left:0; transform:none; width:100vw; padding:0 16px;
+    bottom:calc(40px + 52px);
+  }
+
+  /* бот-иконка в углу баббла */
+  .msg.bot .bot-ic{
+    width:16px; height:16px; position:absolute; right:6px; top:6px; margin:0;
+  }
+}
+/* ===== Mobile pinned chatbar: icon + caret proper size & alignment ===== */
+@media (max-width:640px){
+
+  /* Кнопка-переключатель бота (когда чат прибит к низу) */
+  .chat-active .business{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;                 /* расстояние между иконкой и кареткой */
+    position:relative;
+  }
+
+  /* Иконка профессии — строго 22×22 и по центру */
+  .chat-active .business .biz-ic{
+    width:22px; height:22px;
+    flex:0 0 22px;
+    display:block;
+    margin:0;
+  }
+
+  /* Каретка — рядом с иконкой, без absolute, фиксированный размер */
+  .chat-active .business .biz-caret{
+    position:static !important;   /* убираем старое absolute */
+    right:auto !important;
+    top:auto !important;
+    transform:none !important;
+
+    width:18px !important;        /* каретка заметная, но аккуратная */
+    height:12px !important;
+    flex:0 0 14px !important;
+
+    stroke-width:2.5;             /* потолще линия */
+    vector-effect:non-scaling-stroke;
+  }
+
+  /* Поворот при открытии списка (уже без смещения) */
+  .chat-active .business.open .biz-caret{
+    transform:rotate(180deg) !important;
+  }
+}
+/* ===== FIX: бот-аватарка в правом верхнем углу бабла, не смещается ===== */
+@media (max-width:640px){
+  /* Устанавливаем контекст позиционирования для родителя */
+  .msg.bot {
+    position: relative !important;
+  }
+
+  /* Аватарка внутри бабла */
+  .msg.bot .bot-ic {
+    position: absolute !important;
+    right: 6px !important;
+    top: 6px !important;
+    width: 16px !important;
+    height: 16px !important;
+    margin: 0 !important;
+    z-index: 3 !important; /* поверх текста */
+    transition: none !important;
+  }
+
+  /* чтобы не прыгала после анимации */
+  .msg.bot.anim-in .bot-ic {
+    animation: none !important;
+  }
+}
+/* ===== Mobile: widen chat bubbles for better readability ===== */
+@media (max-width:640px){
+  .msg .bubble{
+    max-width: 60vw !important;   /* почти на всю ширину экрана */
+    font-size: 14px;              /* чуть крупнее для читаемости */
+    line-height: 20px;
+    word-break: break-word;
+  }
+
+  /* Отступы, чтобы не прилипали к краям */
+  .msg.user .bubble{
+    margin-left: 4vw;
+  }
+  .msg.bot .bubble{
+    margin-right: 4vw;
+  }
+}
+/* ===== Mobile pinned: dropdown поверх барa, не обрезается ===== */
+@media (max-width:640px){
+  /* перекрываем старые настройки */
+  .chat-active .business .dropdown{
+    position: fixed !important;
+    left: 16px !important;
+    right: 16px !important;
+    bottom: calc(20px + 40px + 8px) !important; /* от низа: отступ 20 + высота барa 40 + небольшой гэп */
+    transform: none !important;
+    width: auto !important;
+
+    max-height: 50vh;              /* чтобы не занимал весь экран */
+    overflow: auto;                /* прокрутка при длинном списке */
+    z-index: 1000;                 /* поверх всего UI */
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+  }
 }
 
-/* Сообщения */
-.messages {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  gap: 20px;
-  width: 100%;
+/* ===== Mobile pinned: белая иконка при заливке кнопки ===== */
+@media (max-width:640px){
+  .chat-active .business.open .biz-ic,
+  .chat-active .business:hover .biz-ic,
+  .chat-active .business:active .biz-ic{
+    /* превращаем тёмную svg-иконку в белую */
+    filter: invert(1) brightness(2);
+    -webkit-filter: invert(1) brightness(2);
+  }
 }
-.msg {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  width: 100%;
-}
-.msg.user { justify-content: flex-start; }
-.msg.bot  { justify-content: flex-end; }
+/* ...весь твой текущий CSS остаётся без изменений... */
 
-.msg .bubble {
-  background: #fff;
-  color: var(--ink);
-  border-radius: 16px;
-  padding: 12px 16px;
-  max-width: calc(var(--input-w, 600px) * 0.7);
-  text-align: left;
-  font-size: 12px;
-  line-height: 16px;
-  box-shadow: 0 1px 2px rgba(0,0,0,.04);
-  word-wrap: break-word;
+/* ====== Map card inside bot bubble ====== */
+.map-card{ line-height:1.35; }
+.map-card .map-title{
+  font-weight:600;
+  margin:0 0 14px 0;
 }
+.map-card .addr-line{
+  margin:0 0 6px 0;
+}
+.map-card .map-open{
+  display:inline-block;
+  margin-top:6px;
+  color:#7BA9FF;
+  text-decoration:none;
+}
+.map-card .map-open:hover{
+  text-decoration:underline;
+}
+/* ==== Mobile: info-иконка в выпадашке в кружке 24px ==== */
+@media (max-width:640px){
+  /* показываем значок только на мобиле (в десктопном CSS он display:none) */
+  .dropdown .opt.active .opt-info{
+    display:inline-flex !important;
+    align-items:center; 
+    justify-content:center;
 
-/* Анимация появления */
-@keyframes riseIn {
-  0%   { opacity: 0; transform: translateY(20px); }
-  70%  { opacity: 1; transform: translateY(4px); }
-  100% { opacity: 1; transform: translateY(0); }
-}
-.msg.anim-in {
-  animation: riseIn .35s cubic-bezier(.25,.1,.25,1);
-}
+    width:24px; 
+    height:24px; 
+    flex:0 0 24px;
 
-/* --- HOTFIX: вернуть контент поверх жёлтой фигуры --- */
-.bg-figure,
-.bg-figure * {
-  pointer-events: none;          /* фон не перехватывает клики */
-}
+    border:1px solid var(--ink);
+    border-radius:50%;
+    background:#fff url("./assets/images/icon info.svg") center/12px 12px no-repeat;
 
-.hero {
-  position: relative;            /* создаём свой слой */
-  z-index: 3;                    /* выше фоновой фигуры */
-}
+    cursor:pointer;
+  }
 
-header {
-  position: relative;
-  z-index: 5;                    /* шапка всегда сверху */
+  /* лёгкий hover, чтобы было понятно, что это кнопка */
+  .dropdown .opt.active .opt-info:hover{
+    background-color:#f7f7f7;
+  }
 }
+/* ==== Модалка с описанием бота ==== */
+.modal{ 
+  position:fixed; inset:0; z-index:9999; 
+}
+.modal-shade{
+  position:absolute; inset:0;
+  background:rgba(0,0,0,.45);
+}
+.modal-card{
+  position:absolute; left:50%; top:50%;
+  transform:translate(-50%,-50%);
+  width:min(560px, calc(100vw - 48px));
+  background:#fff; color:var(--ink);
+  border-radius:16px; box-shadow:var(--shadow);
+  padding:20px 20px 16px;
+}
+.modal-card p{ margin:0; line-height:1.5; }
 
-/* ----- Fine tune chat stream position ----- */
-.chat-active .chat-stream {
-  display: flex;
-  flex-direction: column-reverse;
-  position: fixed;
-  left: 50%;
-  transform: translateX(-45%);     /* ← чуть вправо (~4%) */
-  width: var(--input-w, 600px);
-  bottom: calc(54px + 60px);       /* ↑ чуть выше — отступ 40px */
-  height: calc(100vh - 180px);     /* поднимаем общий блок */
-  overflow-y: hidden;
-  overflow-x: hidden;
-  z-index: 2;
+.modal-x{
+  position:absolute; top:10px; right:12px;
+  width:28px; height:28px; border-radius:50%;
+  border:1px solid var(--ink); background:#fff; 
+  color:var(--ink); font-size:18px; line-height:26px;
+  display:inline-flex; align-items:center; justify-content:center;
+  cursor:pointer;
 }
+.modal-x:hover{ background:#f6f6f6; }

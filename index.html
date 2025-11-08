@@ -31,7 +31,7 @@
       Wählen Sie die Art Ihres Unternehmens aus und stellen Sie dem intelligenten Chatbot eine beliebige Frage
     </p>
 
-    <!-- STREAM: сюда летят сообщения (новые сверху) -->
+    <!-- STREAM -->
     <section class="chat-stream" id="chat">
       <div id="messages" class="messages"></div>
     </section>
@@ -40,14 +40,20 @@
     <section class="chat-wrap">
       <div class="chatbar">
         <div class="info-badge">
-          <div class="info-dot" id="infoBtn" title="Info">
+          <button class="info-dot" id="infoBtn" title="Info" type="button" aria-label="Info">
             <img src="./assets/images/icon info.svg" alt="info" />
-          </div>
+          </button>
 
-          <div class="business" id="business">
+          <!-- Business select -->
+          <div class="business" id="business" aria-haspopup="listbox" aria-expanded="false">
+            <span class="biz-ic" aria-hidden="true"></span>
             <span id="bizLabel">Fahrschule</span>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-            <div class="dropdown" id="bizDrop"></div>
+            <svg class="biz-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="6 9 12 15 18 9"/>
+            </svg>
+
+            <div class="dropdown" id="bizDrop" role="listbox" aria-label="Business list"></div>
           </div>
         </div>
 
@@ -55,166 +61,232 @@
           <textarea id="prompt" rows="1" placeholder="Stellen Sie Ihre Frage an den Chatbot"></textarea>
         </div>
 
-        <button class="send" id="send">Senden</button>
+        <button class="send" id="send" type="button">Senden</button>
       </div>
     </section>
   </main>
 
   <script>
-  // --- Data
   const BUSINESSES = [
-    { id: 'fahrschule', label: 'Fahrschule',        hint: 'Theorie/ Praxis, freie Termine, Preise und Anmeldung.' },
-    { id: 'shop',       label: 'Online-Shop',       hint: 'E-Commerce: Verfügbarkeit, Versand, Retouren, Zahlungen.' },
-    { id: 'zahnarzt',   label: 'Zahnärzte',         hint: 'Termine, Behandlungen, Schmerzsprechstunde, Kostenvoranschlag.' },
-    { id: 'handwerk',   label: 'Handwerksbetriebe', hint: 'Reparaturen, Angebote, Terminabsprachen.' }
+    { id: 'fahrschule', label: 'Fahrschule', hint: 'Theorie/ Praxis, freie Termine, Preise und Anmeldung.' },
+    { id: 'shop', label: 'Online-Shop', hint: 'E-Commerce: Verfügbarkeit, Versand, Retouren, Zahlungen.' },
+    { id: 'zahnarzt', label: 'Zahnärzte', hint: 'Termine, Behandlungen, Schmerzsprechstunde, Kostenvoranschlag.' },
+    { id: 'handwerk', label: 'Handwerksbetriebe', hint: 'Reparaturen, Angebote, Terminabsprachen.' }
   ];
 
-  // --- Elements
-  const bizDrop    = document.getElementById('bizDrop');
-  const bizLabel   = document.getElementById('bizLabel');
-  const business   = document.getElementById('business');
-  const infoBtn    = document.getElementById('infoBtn');
-  const promptEl   = document.getElementById('prompt');
-  const entryWrap  = document.querySelector('.entry');
-  const hero       = document.getElementById('hero');
+  const bizDrop = document.getElementById('bizDrop');
+  const bizLabel = document.getElementById('bizLabel');
+  const business = document.getElementById('business');
+  const infoBtn = document.getElementById('infoBtn');
+  const promptEl = document.getElementById('prompt');
+  const hero = document.getElementById('hero');
   const messagesEl = document.getElementById('messages');
-  const chatbarEl  = document.querySelector('.chatbar');
 
-  let activeBiz  = BUSINESSES[0];
+  let activeBiz = BUSINESSES[0];
   let chatActive = false;
 
+  function setBizClass(){
+    business.classList.remove('biz-fahrschule','biz-shop','biz-zahnarzt','biz-handwerk');
+    business.classList.add('biz-'+activeBiz.id);
+  }
+
   function renderDropdown(){
-    bizDrop.innerHTML = BUSINESSES
-      .map(b => `<div class="opt ${b.id===activeBiz.id?'active':''}" data-id="${b.id}">${b.label}</div>`)
-      .join('');
+    bizDrop.innerHTML = BUSINESSES.map(b=>{
+      const active = b.id===activeBiz.id?'active':'';
+      const info = b.id===activeBiz.id?'<button class="opt-info" type="button" aria-label="Info"></button>':'';
+      return `<div class="opt ${active}" data-id="${b.id}" role="option" aria-selected="${active?'true':'false'}">
+        <span>${b.label}</span>${info}
+      </div>`;
+    }).join('');
     bizLabel.textContent = activeBiz.label;
+    setBizClass();
   }
   renderDropdown();
 
-  // --- Dropdown: ховер-открытие
   let hoverTimer;
-  business.addEventListener('mouseenter', () => {
-    clearTimeout(hoverTimer);
-    bizDrop.classList.add('open');
-    business.classList.add('open');
-  });
-  business.addEventListener('mouseleave', () => {
-    hoverTimer = setTimeout(() => {
-      bizDrop.classList.remove('open');
-      business.classList.remove('open');
-    }, 80);
+  const isTouch = ()=>matchMedia('(hover: none)').matches;
+
+  function openDrop(){ bizDrop.classList.add('open'); business.classList.add('open'); business.setAttribute('aria-expanded','true'); }
+  function closeDrop(){ bizDrop.classList.remove('open'); business.classList.remove('open'); business.setAttribute('aria-expanded','false'); }
+
+  business.addEventListener('mouseenter',()=>{ if(isTouch())return; clearTimeout(hoverTimer); openDrop(); });
+  business.addEventListener('mouseleave',()=>{ if(isTouch())return; hoverTimer=setTimeout(closeDrop,80); });
+
+  business.addEventListener('click',(e)=>{
+    const onOption=e.target.closest('.opt');
+    const onInfoOpt=e.target.closest('.opt-info');
+    const inDrop=e.target.closest('.dropdown');
+    if(onInfoOpt){ showModal(activeBiz.hint); return; }
+    if(onOption){
+      const id=onOption.getAttribute('data-id');
+      activeBiz=BUSINESSES.find(b=>b.id===id)||activeBiz;
+      renderDropdown();
+      messagesEl.innerHTML='';
+      setLayoutVars();
+      closeDrop();
+      return;
+    }
+    if(!inDrop){ bizDrop.classList.contains('open')?closeDrop():openDrop(); }
   });
 
-  // выбор пункта
-  business.addEventListener('click', (e) => {
-    const opt = e.target.closest('.opt');
-    if (!opt) return;
-    const id = opt.getAttribute('data-id');
-    activeBiz = BUSINESSES.find(b => b.id === id) || activeBiz;
-    renderDropdown();
-    messagesEl.innerHTML = '';                // очистка истории
-    bizDrop.classList.remove('open');
-    business.classList.remove('open');
-    setLayoutVars();                          // пересчёт ширин на всякий
-  });
-
-  // --- Info tooltip только на кружке
-  let tooltip = null;
-  infoBtn.addEventListener('mouseenter', () => {
-    if (tooltip) return;
-    tooltip = document.createElement('div');
-    tooltip.className = 'tooltip';
-    tooltip.innerHTML = `<p>${activeBiz.hint}</p>`;
+  let tooltip=null;
+  infoBtn.addEventListener('mouseenter',()=>{
+    if(tooltip||isTouch())return;
+    tooltip=document.createElement('div');
+    tooltip.className='tooltip';
+    tooltip.innerHTML=`<p>${activeBiz.hint}</p>`;
     infoBtn.parentElement.appendChild(tooltip);
-    tooltip.style.display = 'block';
+    tooltip.style.display='block';
   });
-  infoBtn.addEventListener('mouseleave', () => {
-    if (tooltip) { tooltip.remove(); tooltip = null; }
-  });
+  infoBtn.addEventListener('mouseleave',()=>{ if(tooltip){ tooltip.remove(); tooltip=null; } });
 
-  // --- Textarea + каретка
-  function normalizeHeight(){ promptEl.style.height = '54px'; }
-  normalizeHeight();
-  function syncCaret(){ entryWrap.classList.toggle('empty', !promptEl.value); }
-  syncCaret();
-  ['input','change','blur','focus','keyup'].forEach(ev =>
-    promptEl.addEventListener(ev, syncCaret)
-  );
-
-  // ---------- размеры (для ширины ленты и 70% баблов) ----------
-  function setLayoutVars(){
-    const root = document.documentElement;
-    const chatbarW = Math.round(chatbarEl.getBoundingClientRect().width);
-    const inputW = Math.round(entryWrap.getBoundingClientRect().width);
-    root.style.setProperty('--chatbar-w', chatbarW + 'px');
-    root.style.setProperty('--input-w',   inputW   + 'px');
+  function showModal(text){
+    const wrap=document.createElement('div');
+    wrap.className='modal';
+    wrap.innerHTML=`
+      <div class="modal-shade"></div>
+      <div class="modal-card">
+        <button class="modal-x" aria-label="Close">×</button>
+        <p>${text}</p>
+      </div>`;
+    document.body.appendChild(wrap);
+    wrap.querySelector('.modal-x').onclick=
+    wrap.querySelector('.modal-shade').onclick=()=>wrap.remove();
   }
-  window.addEventListener('resize', setLayoutVars);
+
+  function setLayoutVars(){
+    const root=document.documentElement;
+    const inputW=Math.round(document.querySelector('.entry').getBoundingClientRect().width);
+    root.style.setProperty('--input-w',inputW+'px');
+  }
+  window.addEventListener('resize',setLayoutVars);
   setLayoutVars();
 
-  // ---------- CHAT ----------
+  function buildBubbleHTML({text='',images=null,file=null}){
+    let html=`<div class="bubble">`;
+    if(images&&images.length){
+      const cols=Math.min(images.length,6);
+      html+=`<div class="gallery cols-${cols}">`+
+        images.map(src=>`<div class="g-item"><img src="${src}" alt=""></div>`).join('')+
+      `</div>`;
+      if(text)html+=`<div class="gap10"></div>`;
+    }
+    if(file){
+      html+=`<a class="file" href="${file.href||'#'}" download>
+        <span class="file-ic"><img src="./assets/images/icon doc.svg" alt="doc"></span>
+        <span class="file-name">${file.name||'document.pdf'}</span>
+      </a>`;
+      if(text)html+=`<div class="gap10"></div>`;
+    }
+    if(text)html+=`${text}`;
+    html+=`</div>`;
+    return html;
+  }
+
   function activateChatUI(){
-    if (chatActive) return;
-    chatActive = true;
+    if(chatActive)return;
+    chatActive=true;
     document.body.classList.add('chat-active');
     hero.classList.add('chat-mode');
     setLayoutVars();
   }
 
-  function addMessage(text, role='user'){
-    const wrap = document.createElement('div');
-    wrap.className = `msg ${role} anim-in`;
-    wrap.innerHTML = role === 'bot'
-      ? `<div class="bubble">${text}</div><img class="bot-ic" src="./assets/images/icon chatbot.svg" alt="bot">`
-      : `<div class="bubble">${text}</div>`;
-    messagesEl.appendChild(wrap);        // т.к. контейнер column-reverse, append = внизу
-    // убрать класс после анимации
-    wrap.addEventListener('animationend', ()=> wrap.classList.remove('anim-in'), {once:true});
+  function addMessage(content,role='user'){
+    const wrap=document.createElement('div');
+    wrap.className=`msg ${role} anim-in`;
+    if(typeof content==='string'){
+      wrap.innerHTML=role==='bot'
+        ?`<div class="bubble">${content}</div><img class="bot-ic" src="./assets/images/icon chatbot.svg" alt="bot">`
+        :`<div class="bubble">${content}</div>`;
+    }else{
+      const bubble=buildBubbleHTML(content);
+      wrap.innerHTML=role==='bot'
+        ?`${bubble}<img class="bot-ic" src="./assets/images/icon chatbot.svg" alt="bot">`
+        :bubble;
+    }
+    messagesEl.appendChild(wrap);
+    wrap.addEventListener('animationend',()=>wrap.classList.remove('anim-in'),{once:true});
   }
 
   function fakeBotReply(){
-    const canned = {
-      fahrschule: [
-        "Здравствуйте! У нас 3 варианта: 1 месяц — 39 €, 3 месяца — 99 €, год — 299 € (душ + шкафчик бесплатно). Показать фото зала или ближайшие тренировки?",
-        "Готово — записал вас на бесплатную тренировку. Хотите перенести время?"
-      ],
-      shop: [
-        "Товар в наличии. Доставка 2–3 дня, есть возврат 14 дней.",
-        "Отправил вам счёт на e-mail. Всё ок?"
-      ],
-      zahnarzt: [
-        "Есть окно завтра в 10:30 и 14:15. Какой слот вам удобнее?",
-        "Записал. Напомнить за день?"
-      ],
-      handwerk: [
-        "Можем приехать в пятницу 9–12 или 13–16. Подходит?",
-        "Сформировал заявку и отправил на почту."
-      ]
-    };
-    const list = canned[activeBiz.id] || ["Готово.", "Принял."];
-    const reply = list[Math.floor(Math.random()*list.length)];
-    setTimeout(()=> addMessage(reply,'bot'), 500);
+    const list=[
+      "Товар в наличии. Доставка 2–3 дня.",
+      "Есть окно завтра в 10:30 и 14:15. Какой слот удобнее?",
+      "Сформировал заявку и отправил на почту."
+    ];
+    const reply=list[Math.floor(Math.random()*list.length)];
+    setTimeout(()=>addMessage(reply,'bot'),500);
+  }
+
+  function handleCommands(text){
+    const m=text.trim().toLowerCase();
+
+    if(m==='map'){
+      activateChatUI();
+      const name='START Fahrschule Oldenburg';
+      const street='Liegnitzer Str. 38';
+      const city='26127 Oldenburg';
+      const lat='53.143';
+      const lng='8.213';
+
+      addMessage({
+        text:`
+        <div class="map-card">
+          <div class="map-title">${name}</div>
+          <div class="addr-line">${street}</div>
+          <div class="addr-line">${city}</div>
+          <a class="map-open map-link" data-lat="${lat}" data-lng="${lng}" data-label="${name}">Karte öffnen</a>
+        </div>`
+      },'bot');
+      return true;
+    }
+
+    return false;
   }
 
   function sendCurrent(){
-    const text = (promptEl.value || '').trim();
-    if (!text) return;
+    const text=(promptEl.value||'').trim();
+    if(!text)return;
     activateChatUI();
-    addMessage(text, 'user');
-    promptEl.value = '';
-    syncCaret();
-    promptEl.focus();                 // ← фокус НЕ снимаем
-    fakeBotReply();
+    addMessage(text,'user');
+    promptEl.value='';
+    if(!handleCommands(text)){ fakeBotReply(); }
+    promptEl.focus();
   }
 
-  document.getElementById('send').addEventListener('click', sendCurrent);
-  promptEl.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && !e.shiftKey){
-      e.preventDefault();
-      sendCurrent();
-    }
+  document.getElementById('send').addEventListener('click',sendCurrent);
+  promptEl.addEventListener('keydown',(e)=>{
+    if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); sendCurrent(); }
   });
-</script>
 
+  window.addEventListener('load',()=>promptEl.focus());
+  </script>
+
+  <!-- Mobile placeholder -->
+  <script>
+    document.addEventListener('DOMContentLoaded',()=>{
+      if(window.matchMedia('(max-width:640px)').matches){
+        const ta=document.querySelector('.entry textarea');
+        if(ta)ta.placeholder='Frage an den Chatbot';
+      }
+    });
+  </script>
+
+  <!-- Map link handler -->
+  <script>
+  document.addEventListener('click',function(e){
+    const a=e.target.closest('.map-link');
+    if(!a)return;
+    e.preventDefault();
+    const lat=a.dataset.lat, lng=a.dataset.lng, label=encodeURIComponent(a.dataset.label||'Ort');
+    const ua=navigator.userAgent.toLowerCase();
+    const isIOS=/iphone|ipad|ipod/.test(ua);
+    const isAndroid=/android/.test(ua);
+    let link=`https://www.google.com/maps?q=${lat},${lng}(${label})`;
+    if(isIOS)link=`maps://?q=${label}&ll=${lat},${lng}`;
+    if(isAndroid)link=`geo:0,0?q=${lat},${lng}(${label})`;
+    window.open(link,'_blank');
+  });
+  </script>
 </body>
 </html>
