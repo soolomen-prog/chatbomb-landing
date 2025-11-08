@@ -154,13 +154,54 @@
     wrap.querySelector('.modal-shade').onclick=()=>wrap.remove();
   }
 
+  /* ---------- layout + autosize ---------- */
   function setLayoutVars(){
     const root=document.documentElement;
+    // ширина input — как и раньше
     const inputW=Math.round(document.querySelector('.entry').getBoundingClientRect().width);
     root.style.setProperty('--input-w',inputW+'px');
+    // высота чат-бара — нужна, чтобы поток сообщений не наезжал
+    const bar=document.querySelector('.chatbar');
+    if(bar){
+      root.style.setProperty('--chatbar-h', Math.round(bar.getBoundingClientRect().height)+'px');
+    }
   }
-  window.addEventListener('resize',setLayoutVars);
-  setLayoutVars();
+  window.addEventListener('resize',()=>{ autosize(); setLayoutVars(); });
+
+  function autosize(){
+    const ta = promptEl;
+    if(!ta) return;
+
+    // базовая высота: 54px (desktop/start) или 40px (mobile pinned)
+    const isPinned = document.body.classList.contains('chat-active');
+    const isMobile = matchMedia('(max-width:640px)').matches;
+    const base = (isPinned && isMobile) ? 40 : 54;
+    const maxH = 98;
+
+    // стилево: для корректного scrollHeight
+    ta.style.height = 'auto';
+    ta.style.overflowY = 'hidden';
+
+    // вычисляем и ограничиваем
+    const h = Math.min(ta.scrollHeight, maxH);
+    ta.style.height = h + 'px';
+
+    // уменьшаем радиус, если пошли 2+ строки
+    if (h > base) ta.classList.add('expanded'); else ta.classList.remove('expanded');
+
+    // если упёрлись в максимум — даём вертикальный скролл
+    ta.style.overflowY = (ta.scrollHeight > h) ? 'auto' : 'hidden';
+
+    setLayoutVars();
+  }
+
+  function activateChatUI(){
+    if(chatActive)return;
+    chatActive=true;
+    document.body.classList.add('chat-active');
+    hero.classList.add('chat-mode');
+    autosize();
+  }
 
   function buildBubbleHTML({text='',images=null,file=null}){
     let html=`<div class="bubble">`;
@@ -181,14 +222,6 @@
     if(text)html+=`${text}`;
     html+=`</div>`;
     return html;
-  }
-
-  function activateChatUI(){
-    if(chatActive)return;
-    chatActive=true;
-    document.body.classList.add('chat-active');
-    hero.classList.add('chat-mode');
-    setLayoutVars();
   }
 
   function addMessage(content,role='user'){
@@ -219,10 +252,30 @@
   }
 
   function handleCommands(text){
-    const m=text.trim().toLowerCase();
+    const m = text.trim().toLowerCase();
 
-    if(m==='map'){
-      activateChatUI();
+    // gallery / gallery N (1..6)
+    const gMatch = m.match(/^gallery(?:\s+(\d))?$/);
+    if (gMatch){
+      const n = Math.max(1, Math.min(6, parseInt(gMatch[1]||'3', 10)));
+      const imgs = Array.from({length:n}, (_,i)=>
+        `https://picsum.photos/seed/cb${Date.now()}_${i}/640/420`
+      );
+      addMessage({ images: imgs, text: "" }, "bot");
+      return true;
+    }
+
+    // doc / file
+    if (m === 'doc' || m === 'file'){
+      addMessage({
+        file: { href: 'https://example.com/beispiel.pdf', name: 'Beispiel-Dokument.pdf' },
+        text: ''
+      }, 'bot');
+      return true;
+    }
+
+    // map
+    if (m === 'map'){
       const name='START Fahrschule Oldenburg';
       const street='Liegnitzer Str. 38';
       const city='26127 Oldenburg';
@@ -230,14 +283,16 @@
       const lng='8.213';
 
       addMessage({
-        text:`
-        <div class="map-card">
-          <div class="map-title">${name}</div>
-          <div class="addr-line">${street}</div>
-          <div class="addr-line">${city}</div>
-          <a class="map-open map-link" data-lat="${lat}" data-lng="${lng}" data-label="${name}">Karte öffnen</a>
-        </div>`
-      },'bot');
+        text: `
+          <div class="map-card">
+            <div class="map-title">${name}</div>
+            <div class="addr-line">${street}</div>
+            <div class="addr-line">${city}</div>
+            <a class="map-open map-link" data-lat="${lat}" data-lng="${lng}" data-label="${name}">
+              Karte öffnen
+            </a>
+          </div>`
+      }, 'bot');
       return true;
     }
 
@@ -251,6 +306,9 @@
     addMessage(text,'user');
     promptEl.value='';
     if(!handleCommands(text)){ fakeBotReply(); }
+    // сброс высоты и пересчёт
+    promptEl.classList.remove('expanded');
+    autosize();
     promptEl.focus();
   }
 
@@ -258,22 +316,23 @@
   promptEl.addEventListener('keydown',(e)=>{
     if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); sendCurrent(); }
   });
+  promptEl.addEventListener('input', autosize);
 
-  window.addEventListener('load',()=>promptEl.focus());
-  </script>
+  window.addEventListener('load', ()=>{
+    promptEl.focus();
+    autosize();
+    setLayoutVars();
+  });
 
-  <!-- Mobile placeholder -->
-  <script>
-    document.addEventListener('DOMContentLoaded',()=>{
-      if(window.matchMedia('(max-width:640px)').matches){
-        const ta=document.querySelector('.entry textarea');
-        if(ta)ta.placeholder='Frage an den Chatbot';
-      }
-    });
-  </script>
+  // Mobile placeholder
+  document.addEventListener('DOMContentLoaded',()=>{
+    if(window.matchMedia('(max-width:640px)').matches){
+      const ta=document.querySelector('.entry textarea');
+      if(ta)ta.placeholder='Frage an den Chatbot';
+    }
+  });
 
-  <!-- Map link handler -->
-  <script>
+  // Map link handler
   document.addEventListener('click',function(e){
     const a=e.target.closest('.map-link');
     if(!a)return;
