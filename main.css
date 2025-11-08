@@ -29,14 +29,15 @@
   --input-w:600px;
   --link-hover:#7BA9FF;
 
-  /* динамические переменные для верстки чата */
-  --chatbar-h:54px;         /* реальная высота чатбара (JS) */
-  --kb:0px;                 /* «высота» клавиатуры (JS/visualViewport) */
+  /* runtime vars */
+  --chatbar-h:54px;
+  --kb:0px;
 }
 
 /* ---------- Base ---------- */
 *{ box-sizing:border-box; }
 html,body{ height:100%; overflow-x:hidden; }
+html{ -webkit-text-size-adjust:100%; }
 body{
   margin:0;
   font-family:"TT Firs Neue",sans-serif;
@@ -84,44 +85,37 @@ header{ position:relative; z-index:5; }
 .info-dot img{ width:14px; height:14px; transition:.2s; }
 .info-dot:hover img{ filter:invert(86%) sepia(83%) saturate(639%) hue-rotate(2deg) brightness(102%) contrast(97%); }
 
-/* --- business select (button) --- */
+/* --- business select --- */
 .business{
   width:218px; height:54px; border-radius:var(--radius);
   border:1px solid var(--ink); background:transparent;
   display:flex; align-items:center; padding:0 18px; gap:10px; cursor:pointer; position:relative;
-  transition:background .2s, color .2s, border-color .2s;
-  color:var(--ink);
+  transition:background .2s, color .2s, border-color .2s; color:var(--ink);
 }
-.business span#bizLabel{
-  flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-align:left;
-}
+.business span#bizLabel{ flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-align:left; }
 .biz-caret{ width:16px; height:16px; transition:transform .2s, stroke .2s; }
 .business:hover{ background:var(--ink); border-color:var(--ink); }
 .business:hover span#bizLabel{ color:#fff; }
 .business:hover .biz-caret{ stroke:#fff; }
 .business.open .biz-caret{ transform:rotate(180deg); }
 
-/* icons in button (used on mobile in chat-active) */
 .biz-ic{ width:0; height:0; display:none; background-size:contain; background-repeat:no-repeat; }
 .business.biz-fahrschule .biz-ic{ background-image:url("./assets/images/icon prof fahr.svg"); }
 .business.biz-shop      .biz-ic{ background-image:url("./assets/images/icon prof shop.svg"); }
 .business.biz-zahnarzt  .biz-ic{ background-image:url("./assets/images/icon prof zahn.svg"); }
 .business.biz-handwerk  .biz-ic{ background-image:url("./assets/images/icon prof werk.svg"); }
 
-/* --- dropdown (text-only) --- */
+/* --- dropdown --- */
 .dropdown{
   position:absolute; left:0; right:0; bottom:calc(100% + 10px);
-  background:var(--white); border-radius:12px; box-shadow:var(--shadow); overflow:hidden; display:none; text-align:left;
-  color:var(--ink);
+  background:var(--white); border-radius:12px; box-shadow:var(--shadow); overflow:hidden; display:none; text-align:left; color:var(--ink);
 }
 .dropdown.open{ display:block; }
 .dropdown .opt{
-  font-size:16px; line-height:34px; padding:8px 16px; cursor:pointer; display:flex; align-items:center; justify-content:space-between;
-  color:var(--ink);
+  font-size:16px; line-height:34px; padding:8px 16px; cursor:pointer; display:flex; align-items:center; justify-content:space-between; color:var(--ink);
 }
 .dropdown .opt:hover{ background:var(--blue-soft); }
 .dropdown .opt.active{ background:var(--blue-soft); font-weight:600; }
-/* info only for active item (mobile) */
 .opt-info{
   width:20px; height:20px; border:none; background:transparent url("./assets/images/icon info.svg") center/20px 20px no-repeat; cursor:pointer;
   flex:0 0 20px; display:none;
@@ -153,7 +147,8 @@ header{ position:relative; z-index:5; }
   position:fixed;
   left:50%;
   transform:translateX(-50%);
-  bottom:calc(10px + var(--kb) * 0.7);   /* уменьшили отступ, делаем плавнее */
+  /* минимальный отступ + safe-area + доля высоты клавиатуры */
+  bottom:calc(max(8px, env(safe-area-inset-bottom)) + var(--kb) * .5);
   z-index:6;
 }
 .chat-mode .headline, .chat-mode .subhead{
@@ -163,16 +158,12 @@ header{ position:relative; z-index:5; }
 /* Messages stream */
 .chat-stream{ display:none; }
 .chat-active .chat-stream{
-  display:flex;
-  flex-direction:column-reverse;
-  position:fixed;
-  left:50%;
-  transform:translateX(-45%);
+  display:flex; flex-direction:column-reverse;
+  position:fixed; left:50%; transform:translateX(-45%);
   width:var(--input-w, 600px);
-  bottom:calc(var(--chatbar-h) + 40px + var(--kb) * 0.7); /* немного прижали поток */
+  bottom:calc(var(--chatbar-h) + 36px + var(--kb) * .5);
   height:calc(100vh - 180px);
-  overflow:hidden;
-  z-index:2;
+  overflow:hidden; z-index:2;
 }
 .messages{ display:flex; flex-direction:column; justify-content:flex-end; gap:20px; width:100%; }
 .msg{ display:flex; align-items:flex-start; gap:10px; width:100%; }
@@ -226,7 +217,6 @@ header{ position:relative; z-index:5; }
   .headline{ font-size:32px; line-height:40px; }
   .subhead{ margin-bottom:40px; }
 
-  /* initial — три ряда на всю ширину */
   .chatbar{
     width:100vw; max-width:100vw; margin:0; padding:0 16px;
     grid-template-columns:1fr; gap:10px; box-sizing:border-box;
@@ -234,21 +224,19 @@ header{ position:relative; z-index:5; }
   .info-dot{ display:none; }
   .business, .entry, .send{ width:100%; }
 
-  /* кнопка — выравнивание текста и каретки */
   .business{ justify-content:flex-start; }
   .business #bizLabel{ text-align:left; }
-  .business .biz-caret{
-    position:absolute; right:18px; top:50%; transform:translateY(-50%);
-  }
+  .business .biz-caret{ position:absolute; right:18px; top:50%; transform:translateY(-50%); }
 
-  /* После первого сообщения — вниз, в одну линию */
+  /* pinned layout */
   .chat-active .chatbar{
-    position:fixed; left:0; right:0; transform:none; 
-    bottom:calc(20px + var(--kb)); padding:0 16px;
+    position:fixed; left:0; right:0; transform:none;
+    bottom:calc(max(12px, env(safe-area-inset-bottom)) + var(--kb));
+    padding:0 16px;
     grid-template-columns:58px 1fr auto; gap:8px;
   }
 
-  /* узкая кнопка профессий (иконка + каретка) */
+  /* compact business button */
   .chat-active .business{
     width:58px; height:40px; border-radius:20px; padding:0 10px;
     display:flex; align-items:center; justify-content:center; gap:6px;
@@ -258,8 +246,7 @@ header{ position:relative; z-index:5; }
   .chat-active .business #bizLabel{ display:none; }
   .chat-active .business .biz-ic{
     display:block !important; width:22px !important; height:22px !important; flex:0 0 22px !important;
-    background-size:contain; background-repeat:no-repeat; background-position:center;
-    margin-left:0;
+    background-size:contain; background-repeat:no-repeat; background-position:center; margin-left:0;
   }
   .chat-active .business .biz-caret{
     position:static !important; right:auto !important; top:auto !important; transform:none !important;
@@ -275,39 +262,37 @@ header{ position:relative; z-index:5; }
   .chat-active .business:active .biz-caret,
   .chat-active .business:hover .biz-caret{ stroke:#fff; }
 
-  .chat-active .entry textarea{ height:40px; line-height:40px; border-radius:20px; font-size:12px; }
+  .chat-active .entry textarea{ height:40px; line-height:40px; border-radius:20px; font-size:16px !important; }
   .chat-active .send{ height:40px; border-radius:20px; font-size:12px; padding:0 16px; }
 
-  /* dropdown — на ширину экрана */
   .chat-active .business .dropdown{
     left:50%; right:auto; transform:translateX(-50%); width:calc(100vw - 32px);
   }
   .opt-info{ display:inline-block; }
 
-  /* поток сообщений — на всю ширину */
   .chat-active .chat-stream{
     left:0; transform:none; width:100vw; padding:0 16px;
-    bottom:calc(var(--chatbar-h) + 52px + var(--kb));
+    bottom:calc(var(--chatbar-h) + 48px + var(--kb));
   }
 
-  /* бот-иконка в углу баббла */
+  /* bot avatar inside bubble */
   .msg.bot .bot-ic{
     width:16px; height:16px; position:absolute; right:6px; top:6px; margin:0;
   }
 }
 
-/* ===== Mobile pinned: dropdown поверх барa, не обрезается ===== */
+/* dropdown over bar */
 @media (max-width:640px){
   .chat-active .business .dropdown{
     position:fixed !important;
     left:16px !important; right:16px !important;
-    bottom:calc(20px + var(--chatbar-h) + 8px + var(--kb)) !important;
+    bottom:calc(max(12px, env(safe-area-inset-bottom)) + var(--chatbar-h) + 8px + var(--kb)) !important;
     transform:none !important; width:auto !important;
     max-height:50vh; overflow:auto; z-index:1000; border-radius:12px; box-shadow:var(--shadow);
   }
 }
 
-/* ===== Mobile pinned: белая иконка при заливке кнопки ===== */
+/* white icon on filled button */
 @media (max-width:640px){
   .chat-active .business.open .biz-ic,
   .chat-active .business:hover .biz-ic,
@@ -317,14 +302,14 @@ header{ position:relative; z-index:5; }
   }
 }
 
-/* ====== Map card inside bot bubble ====== */
+/* map card */
 .map-card{ line-height:1.35; }
 .map-card .map-title{ font-weight:600; margin:0 0 14px 0; }
 .map-card .addr-line{ margin:0 0 6px 0; }
 .map-card .map-open{ display:inline-block; margin-top:6px; color:#7BA9FF; text-decoration:none; }
 .map-card .map-open:hover{ text-decoration:underline; }
 
-/* ==== Mobile: info-иконка в выпадашке в кружке 24px ==== */
+/* info icon in dropdown (24px on mobile) */
 @media (max-width:640px){
   .dropdown .opt.active .opt-info{
     display:inline-flex !important; align-items:center; justify-content:center;
@@ -334,47 +319,15 @@ header{ position:relative; z-index:5; }
   .dropdown .opt.active .opt-info:hover{ background-color:#f7f7f7; }
 }
 
-/* ==== Модалка с описанием бота ==== */
-.modal{ position:fixed; inset:0; z-index:9999; }
-.modal-shade{ position:absolute; inset:0; background:rgba(0,0,0,.45); }
-.modal-card{
-  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
-  width:min(560px, calc(100vw - 48px)); background:#fff; color:var(--ink);
-  border-radius:16px; box-shadow:var(--shadow); padding:20px 20px 16px;
-}
-.modal-card p{ margin:0; line-height:1.5; }
-.modal-x{
-  position:absolute; top:10px; right:12px; width:28px; height:28px; border-radius:50%;
-  border:1px solid var(--ink); background:#fff; color:var(--ink); font-size:18px; line-height:26px;
-  display:inline-flex; align-items:center; justify-content:center; cursor:pointer;
-}
-.modal-x:hover{ background:#f6f6f6; }
-
-/* ==== Мобильный фикс: аватарка бота НЕ «улетает» ==== */
+/* mobile: bot avatar not flying away */
 @media (max-width:640px){
   .msg.bot{ position:relative; }
   .msg.bot .bubble{ padding-right:34px; }
-  .msg.bot .bot-ic{
-    position:absolute; right:6px; top:6px; width:16px; height:16px; margin:0; z-index:3; transition:none;
-  }
+  .msg.bot .bot-ic{ position:absolute; right:6px; top:6px; width:16px; height:16px; margin:0; z-index:3; transition:none; }
   .msg.bot.anim-in .bot-ic{ animation:none; }
 }
-/* iOS anti-zoom: любой ввод ≥16px, иначе Safari зумит */
+
+/* iOS anti-zoom */
 @media (max-width:640px){
   input, textarea, select { font-size:16px !important; }
-
-  /* начальное положение */
-  .entry textarea{
-    font-size:16px !important;   /* было 16, закрепим */
-    line-height:54px;             /* остаётся как было */
-  }
-
-  /* пин-режим (у нас тут стояло 12px — из-за этого и зумило) */
-  .chat-active .entry textarea{
-    font-size:16px !important;    /* ключевая строка */
-    line-height:40px;             /* высота поля = 40px */
-  }
 }
-
-/* на iOS иногда помогает ещё это, чтобы не «подпиливал» масштаб шрифта */
-html { -webkit-text-size-adjust: 100%; }

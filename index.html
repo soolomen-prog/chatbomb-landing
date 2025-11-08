@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport"
-      content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+        content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
   <title>Chatbomb – MVP Landing</title>
   <link rel="stylesheet" href="./main.css" />
 </head>
@@ -68,23 +68,23 @@
   </main>
 
   <script>
-  /* ====== данные по видам бизнеса ====== */
+  /* ====== Business data ====== */
   const BUSINESSES = [
     { id: 'fahrschule', label: 'Fahrschule', hint: 'Theorie/ Praxis, freie Termine, Preise und Anmeldung.' },
-    { id: 'shop', label: 'Online-Shop', hint: 'E-Commerce: Verfügbarkeit, Versand, Retouren, Zahlungen.' },
-    { id: 'zahnarzt', label: 'Zahnärzte', hint: 'Termine, Behandlungen, Schmerzsprechstunde, Kostenvoranschlag.' },
-    { id: 'handwerk', label: 'Handwerksbetriebe', hint: 'Reparaturen, Angebote, Terminabsprachen.' }
+    { id: 'shop',       label: 'Online-Shop', hint: 'E-Commerce: Verfügbarkeit, Versand, Retouren, Zahlungen.' },
+    { id: 'zahnarzt',   label: 'Zahnärzte',   hint: 'Termine, Behandlungen, Schmerzsprechstunde, Kostenvoranschlag.' },
+    { id: 'handwerk',   label: 'Handwerksbetriebe', hint: 'Reparaturen, Angebote, Terminabsprachen.' }
   ];
 
-  const bizDrop = document.getElementById('bizDrop');
-  const bizLabel = document.getElementById('bizLabel');
-  const business = document.getElementById('business');
-  const infoBtn = document.getElementById('infoBtn');
-  const promptEl = document.getElementById('prompt');
-  const hero = document.getElementById('hero');
-  const messagesEl = document.getElementById('messages');
-  const chatbar = document.getElementById('chatbar');
-  const root = document.documentElement;
+  const bizDrop   = document.getElementById('bizDrop');
+  const bizLabel  = document.getElementById('bizLabel');
+  const business  = document.getElementById('business');
+  const infoBtn   = document.getElementById('infoBtn');
+  const promptEl  = document.getElementById('prompt');
+  const hero      = document.getElementById('hero');
+  const messagesEl= document.getElementById('messages');
+  const chatbar   = document.getElementById('chatbar');
+  const root      = document.documentElement;
 
   let activeBiz = BUSINESSES[0];
   let chatActive = false;
@@ -97,7 +97,7 @@
   function renderDropdown(){
     bizDrop.innerHTML = BUSINESSES.map(b=>{
       const active = b.id===activeBiz.id?'active':'';
-      const info = b.id===activeBiz.id?'<button class="opt-info" type="button" aria-label="Info"></button>':'';
+      const info   = b.id===activeBiz.id?'<button class="opt-info" type="button" aria-label="Info"></button>':'';
       return `<div class="opt ${active}" data-id="${b.id}" role="option" aria-selected="${active?'true':'false'}">
         <span>${b.label}</span>${info}
       </div>`;
@@ -107,7 +107,7 @@
   }
   renderDropdown();
 
-  /* ====== раскрытие/закрытие дропдауна ====== */
+  /* ====== dropdown open/close ====== */
   let hoverTimer;
   const isTouch = ()=>matchMedia('(hover: none)').matches;
 
@@ -118,12 +118,12 @@
   business.addEventListener('mouseleave',()=>{ if(isTouch())return; hoverTimer=setTimeout(closeDrop,80); });
 
   business.addEventListener('click',(e)=>{
-    const onOption=e.target.closest('.opt');
-    const onInfoOpt=e.target.closest('.opt-info');
-    const inDrop=e.target.closest('.dropdown');
-    if(onInfoOpt){ showModal(activeBiz.hint); return; }
+    const onOption = e.target.closest('.opt');
+    const onInfo   = e.target.closest('.opt-info');
+    const inDrop   = e.target.closest('.dropdown');
+    if(onInfo){ showModal(activeBiz.hint); return; }
     if(onOption){
-      const id=onOption.getAttribute('data-id');
+      const id=e.target.closest('.opt').getAttribute('data-id');
       activeBiz=BUSINESSES.find(b=>b.id===id)||activeBiz;
       renderDropdown();
       messagesEl.innerHTML='';
@@ -160,7 +160,7 @@
     wrap.querySelector('.modal-shade').onclick=()=>wrap.remove();
   }
 
-  /* ====== layout-vars: ширина инпута + реальная высота чатбара ====== */
+  /* ====== layout vars ====== */
   function setLayoutVars(){
     root.style.setProperty('--input-w', Math.round(document.querySelector('.entry').getBoundingClientRect().width)+'px');
     root.style.setProperty('--chatbar-h', Math.round(chatbar.getBoundingClientRect().height)+'px');
@@ -168,13 +168,12 @@
   window.addEventListener('resize', setLayoutVars);
   setLayoutVars();
 
-  /* ====== iOS/Android keyboard: считаем «высоту» клавиатуры через visualViewport ====== */
+  /* ====== keyboard height via visualViewport ====== */
   function updateKb(){
     const vv = window.visualViewport;
     if(!vv){ root.style.setProperty('--kb','0px'); return; }
     const kb = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
     root.style.setProperty('--kb', kb + 'px');
-    // при поднятии клавиатуры держим курсор видимым
     if(document.activeElement === promptEl){
       setTimeout(()=>promptEl.scrollIntoView({block:'nearest', behavior:'smooth'}), 0);
     }
@@ -186,7 +185,7 @@
   promptEl.addEventListener('focus', ()=>setTimeout(updateKb, 50));
   promptEl.addEventListener('blur',  ()=>root.style.setProperty('--kb','0px'));
 
-  /* ====== сообщенийки ====== */
+  /* ====== messages ====== */
   function buildBubbleHTML({text='',images=null,file=null}){
     let html=`<div class="bubble">`;
     if(images&&images.length){
@@ -244,7 +243,7 @@
     setTimeout(()=>addMessage(reply,'bot'),500);
   }
 
-  /* ====== демо-команда с «картой» ====== */
+  /* ====== demo command with map ====== */
   function handleCommands(text){
     const m=text.trim().toLowerCase();
     if(m==='map'){
@@ -256,8 +255,7 @@
       const lng='8.213';
 
       addMessage({
-        text:`
-        <div class="map-card">
+        text:`<div class="map-card">
           <div class="map-title">${name}</div>
           <div class="addr-line">${street}</div>
           <div class="addr-line">${city}</div>
@@ -312,59 +310,10 @@
     const isIOS=/iphone|ipad|ipod/.test(ua);
     const isAndroid=/android/.test(ua);
     let link=`https://www.google.com/maps?q=${lat},${lng}(${label})`;
-    if(isIOS)link=`maps://?q=${label}&ll=${lat},${lng}`;
-    if(isAndroid)link=`geo:0,0?q=${lat},${lng}(${label})`;
+    if(isIOS)     link=`maps://?q=${label}&ll=${lat},${lng}`;
+    if(isAndroid) link=`geo:0,0?q=${lat},${lng}(${label})`;
     window.open(link,'_blank');
   });
   </script>
-
-<script>
-/* iOS keyboard fix: keep chatbar visible while the keyboard is open */
-(function () {
-  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-  if (!isIOS) return;
-
-  const chatbar = document.querySelector('.chatbar');
-  const hero    = document.querySelector('.hero');
-  const ta      = document.getElementById('prompt');
-  if (!chatbar || !hero || !ta) return;
-
-  let prevScroll = 0;
-
-  function onFocus() {
-    prevScroll = window.scrollY || 0;
-
-    // замораживаем страницу на текущем месте
-    document.body.style.height = '100vh';
-    document.body.style.overflow = 'hidden';
-
-    // переводим фиксированные элементы в absolute
-    chatbar.style.position = 'absolute';
-    chatbar.style.bottom   = '0';
-    hero.style.position    = 'absolute';
-    hero.style.top         = prevScroll + 'px';
-
-    // не даём Safari дернуть страницу
-    window.scrollTo(0, prevScroll);
-  }
-
-  function onBlur() {
-    // возвращаем всё как было
-    document.body.style.height  = '';
-    document.body.style.overflow = '';
-
-    chatbar.style.position = '';
-    chatbar.style.bottom   = '';
-    hero.style.position    = '';
-    hero.style.top         = '';
-
-    window.scrollTo(0, prevScroll);
-  }
-
-  ta.addEventListener('focus', onFocus, { passive: true });
-  ta.addEventListener('blur',  onBlur,  { passive: true });
-})();
-</script>
-
 </body>
 </html>
