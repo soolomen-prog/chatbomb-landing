@@ -228,8 +228,10 @@
 
   /* ====== demo command with map ====== */
   function handleCommands(text){
-    const m=text.trim().toLowerCase();
-    if(m==='map'){
+    const m = text.trim();
+
+    // === MAP (как было)
+    if (m.toLowerCase() === 'map') {
       activateChatUI();
       const name='START Fahrschule Oldenburg';
       const street='Liegnitzer Str. 38';
@@ -244,22 +246,105 @@
           <div class="addr-line">${city}</div>
           <a class="map-open map-link" data-lat="${lat}" data-lng="${lng}" data-label="${name}">Karte öffnen</a>
         </div>`
-      },'bot');
+      }, 'bot');
       return true;
     }
+
+    // === DOC
+    // Примеры: "doc", "doc Angebot.pdf", "doc Preisliste.xlsx"
+    if (m.toLowerCase().startsWith('doc')) {
+      activateChatUI();
+      // Вытаскиваем имя файла, если указали
+      const name = m.slice(3).trim() || 'Dokument.pdf';
+      addMessage({
+        file: { name, href: '#' },
+        text: 'Hier ist die Datei.'
+      }, 'bot');
+      return true;
+    }
+
+    // === GALLERY
+    // Примеры: "gallery", "gallery 3", "gallery 6"
+    if (m.toLowerCase().startsWith('gallery')) {
+      activateChatUI();
+      // сколько картинок показать (1..6)
+      let count = parseInt(m.split(/\s+/)[1], 10);
+      if (isNaN(count) || count < 1 || count > 6) count = 4;
+
+      // Генерим простые заглушки SVG (data URI), чтобы ничего не подгружать извне
+      const makeSvg = (i) =>
+        `data:image/svg+xml;utf8,` +
+        encodeURIComponent(
+          `<svg xmlns='http://www.w3.org/2000/svg' width='600' height='600'>
+             <rect width='100%' height='100%' fill='#DEF7FF'/>
+             <text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle'
+                   font-size='28' fill='#19132F' font-family='TT Firs Neue'>
+               Foto ${i}
+             </text>
+           </svg>`
+        );
+
+      const imgs = Array.from({length: count}, (_, i) => makeSvg(i+1));
+
+      addMessage({
+        images: imgs,
+        text: 'Beispiel-Galerie.'
+      }, 'bot');
+
+      return true;
+    }
+
     return false;
   }
 
-  function sendCurrent(){
-    const text=(promptEl.value||'').trim();
-    if(!text)return;
-    activateChatUI();
-    addMessage(text,'user');
-    promptEl.value='';
-    if(!handleCommands(text)){ fakeBotReply(); }
+  async function sendCurrent(){
+  const text = (promptEl.value || '').trim();
+  if (!text) return;
+
+  activateChatUI();
+  addMessage(text, 'user');
+  promptEl.value = '';
+
+  // 1. локальные тестовые команды
+  if (handleCommands(text)) {
     promptEl.focus();
-    forcePaint(); // удерживаем слои видимыми после отправки
+    forcePaint();
+    return;
   }
+
+  // 2. запрос к серверу chatbomb-server (GPT)
+  try {
+    const history = Array.from(document.querySelectorAll('.msg'))
+      .slice(-16)
+      .map(w => {
+        const role = w.classList.contains('bot') ? 'bot' : 'user';
+        const t = w.querySelector('.bubble')?.textContent?.trim() || '';
+        return { role, text: t };
+      });
+
+    const payload = {
+      business: (window.activeBiz && activeBiz.id) || 'fahrschule',
+      prompt: text,
+      history
+    };
+
+    const r = await fetch('https://chatbomb-server.vercel.app/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await r.json();
+    addMessage(data.reply || '…', 'bot');
+  } catch (e) {
+    console.error(e);
+    addMessage('Uups, es gab einen Fehler. Bitte versuche es später erneut.', 'bot');
+  }
+
+  promptEl.focus();
+  forcePaint();
+}
+
 
   document.getElementById('send').addEventListener('click',sendCurrent);
   promptEl.addEventListener('keydown',(e)=>{
@@ -337,6 +422,5 @@
     window.addEventListener('orientationchange', recalcBarHeight);
     recalcBarHeight();
   })();
-  </script>
 </body>
 </html>
