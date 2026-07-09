@@ -1,18 +1,26 @@
 /* ---------- Fonts ---------- */
 @font-face{
-  font-family:"TT Firs Neue";
-  src:url("./assets/fonts/TT Firs Neue Regular.woff2") format("woff2");
-  font-weight:400; font-style:normal; font-display:swap;
+  font-family:"Inter";
+  src:url("./assets/font/Inter_Regular.woff2") format("woff2");
+  font-weight:400;
+  font-style:normal;
+  font-display:swap;
 }
+
 @font-face{
-  font-family:"TT Firs Neue";
-  src:url("./assets/fonts/TT Firs Neue Medium.woff2") format("woff2");
-  font-weight:500; font-style:normal; font-display:swap;
+  font-family:"Inter";
+  src:url("./assets/font/Inter_Medium.woff2") format("woff2");
+  font-weight:500;
+  font-style:normal;
+  font-display:swap;
 }
+
 @font-face{
-  font-family:"TT Firs Neue";
-  src:url("./assets/fonts/TT Firs Neue Bold.woff2") format("woff2");
-  font-weight:800; font-style:normal; font-display:swap;
+  font-family:"Inter";
+  src:url("./assets/font/Inter_Bold.woff2") format("woff2");
+  font-weight:700;
+  font-style:normal;
+  font-display:swap;
 }
 
 /* ---------- Theme ---------- */
@@ -39,7 +47,7 @@ html,body{ height:100%; overflow-x:hidden; }
 html{ -webkit-text-size-adjust:100%; }
 body{
   margin:0;
-  font-family:"TT Firs Neue",sans-serif;
+  font-family:"Inter",sans-serif;
   color:var(--ink);
   background:var(--bg);
   --vv-top: 0px; /* для sticky header */
@@ -59,7 +67,7 @@ header{ position:sticky; top:var(--vv-top); z-index:10; will-change:transform; t
   display:inline-flex; align-items:center; justify-content:center;
   height:44px; padding:0 22px; border-radius:999px;
   border:1px solid var(--ink); background:transparent; color:var(--ink);
-  font:400 16px/1 "TT Firs Neue",sans-serif; cursor:pointer; transition:.2s ease; user-select:none;
+  font:400 16px/1 "Inter",sans-serif; cursor:pointer; transition:.2s ease; user-select:none;
 }
 .btn:hover{ background:var(--black); color:#fff; transform:translateY(-1px); box-shadow:0 10px 24px rgba(0,0,0,.18); }
 
@@ -133,13 +141,13 @@ header{ position:sticky; top:var(--vv-top); z-index:10; will-change:transform; t
 .entry{ width:582px; position:relative; display:flex; align-items:center; }
 .entry textarea{
   width:100%; height:54px; resize:none; padding:0 20px; border-radius:var(--radius); border:none; outline:none;
-  font:400 16px/54px "TT Firs Neue",sans-serif; color:var(--ink); background:#fff; transition:border-radius .2s, box-shadow .2s;
+  font:400 16px/54px "Inter",sans-serif; color:var(--ink); background:#fff; transition:border-radius .2s, box-shadow .2s;
 }
 .entry textarea::placeholder{ color:var(--muted); }
 
 .send{
   width:200px; height:54px; border-radius:var(--radius); border:1px solid var(--ink); background:var(--ink); color:#fff;
-  font:400 16px/1 "TT Firs Neue",sans-serif; cursor:pointer; transition:.2s;
+  font:400 16px/1 "Inter",sans-serif; cursor:pointer; transition:.2s;
 }
 .send:hover{ transform:translateY(-1px); box-shadow:0 10px 24px rgba(0,0,0,.18); }
 
